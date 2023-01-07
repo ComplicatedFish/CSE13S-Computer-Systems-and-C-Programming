@@ -1,4 +1,4 @@
-# CSE 13S, Fall 2023
+# CSE 13S, Winter 2023
 
 ## Assignment directories
 
