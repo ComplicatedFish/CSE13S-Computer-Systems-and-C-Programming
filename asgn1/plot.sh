@@ -26,3 +26,6 @@ gnuplot <<END
 
 END
 
+./monte_carlo -r 2 > output.dat
+awk {' print $2'} < output.dat > temp.dat
+tail -n +2 temp.dat > pi estimation.dat 
