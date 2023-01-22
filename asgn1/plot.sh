@@ -27,12 +27,13 @@ gnuplot <<END
 END
 for i in {2..6}
 do
-	./monte_carlo -r $i -n 4096 > output.dat
-	awk {' print $2'} < output.dat > temp.dat
-	tail -n +2 temp.dat > estimation.dat 
-	awk '{ print $1 - 3.14159 ;}' estimation.dat > error$i.dat
+	./monte_carlo -r $i -n 4096 > output.dat	#runs 4096 times to fit within log scale
+	awk {' print $2'} < output.dat > temp.dat	#prints second column with PI estimation
+	tail -n +2 temp.dat > estimation.dat 		# removes header
+	awk '{ print $1 - 3.14159 ;}' estimation.dat > error$i.dat	#determines difference between estimation and PI
 done
 
+#heredoc for gnuplot
 gnuplot <<END
 	set terminal pdf
 	set output "error.pdf"
@@ -50,5 +51,33 @@ gnuplot <<END
 	"error6.dat" with lines title ""
 
 
+END
+
+> finalestimate.dat	#file is created here to clear it
+for n in {1..100}
+do
+	./monte_carlo -r $RANDOM -n 999 > output.dat
+	awk {' print $2'} < output.dat > temp.dat
+	tail -n 1 temp.dat >> finalestimate.dat
+	sort finalestimate.dat > sorted.dat
+done
+> box.dat
+awk ' ($1 < 3.0) {print $1}' sorted.dat | wc -l | awk '{print 3.0, $1}' >> box.dat
+awk ' ($1 > 3.0 && $1 < 3.1) {print $1}' sorted.dat | wc -l | awk '{print 3.1, $1}' >> box.dat
+awk ' ($1 > 3.1 && $1 < 3.2) {print $1}' sorted.dat | wc -l | awk '{print 3.2, $1}' >> box.dat
+awk ' ($1 > 3.2 && $1 < 3.3) {print $1}' sorted.dat | wc -l | awk '{print 3.3, $1}' >> box.dat
+awk ' ($1 > 3.3 && $1 < 3.4) {print $1}' sorted.dat | wc -l | awk '{print 3.4, $1}' >> box.dat
+
+
+
+
+gnuplot <<END
+	set terminal pdf
+	set output "frequency.pdf"
+	set title "Monte Carlo frequency"
+	set xlabel "x"
+	set ylabel "Frequency after 999 iterations"
+	set zeroaxis
+	plot "box.dat" with boxes title ""
 END
 
