@@ -63,10 +63,11 @@ do
 done
 > box.dat
 awk ' ($1 < 3.0) {print $1}' sorted.dat | wc -l | awk '{print 3.0, $1}' >> box.dat
-awk ' ($1 > 3.0 && $1 < 3.1) {print $1}' sorted.dat | wc -l | awk '{print 3.1, $1}' >> box.dat
-awk ' ($1 > 3.1 && $1 < 3.2) {print $1}' sorted.dat | wc -l | awk '{print 3.2, $1}' >> box.dat
-awk ' ($1 > 3.2 && $1 < 3.3) {print $1}' sorted.dat | wc -l | awk '{print 3.3, $1}' >> box.dat
-awk ' ($1 > 3.3 && $1 < 3.4) {print $1}' sorted.dat | wc -l | awk '{print 3.4, $1}' >> box.dat
+awk ' ($1 > 3.0 && $1 < 3.05) {print $1}' sorted.dat | wc -l | awk '{print 3.05, $1}' >> box.dat
+awk ' ($1 > 3.05 && $1 < 3.1) {print $1}' sorted.dat | wc -l | awk '{print 3.1, $1}' >> box.dat
+awk ' ($1 > 3.1 && $1 < 3.15) {print $1}' sorted.dat | wc -l | awk '{print 3.15, $1}' >> box.dat
+awk ' ($1 > 3.15 && $1 < 3.2) {print $1}' sorted.dat | wc -l | awk '{print 3.2, $1}' >> box.dat
+awk ' ($1 > 3.2) {print $1}' sorted.dat | wc -l | awk '{print 3.25, $1}' >> box.dat
 
 
 
@@ -78,6 +79,8 @@ gnuplot <<END
 	set xlabel "x"
 	set ylabel "Frequency after 999 iterations"
 	set zeroaxis
+	set xtics ("<3" 3, "3 - 3.05" 3.05, "3.05 - 3.1" 3.1, "3.1 - 3.15" 3.15, "3.15 - 3.2" 3.2, ">3.2" 3.25)
+	set boxwidth -.1 relative
 	plot "box.dat" with boxes title ""
 END
 
