@@ -25,7 +25,7 @@ gnuplot <<END
 	sqrt(1-(x**2)) with lines lc rgb "black" title ""
 
 END
-for i in {2..6}
+for i in {2..6}	#loop that runs 5 times
 do
 	./monte_carlo -r $i -n 4096 > output.dat	#runs 4096 times to fit within log scale
 	awk {' print $2'} < output.dat > temp.dat	#prints second column with PI estimation
@@ -54,13 +54,18 @@ gnuplot <<END
 END
 
 > finalestimate.dat	#file is created here to clear it
-for n in {1..100}
+for n in {1..100}	#loop that runs 100 times
 do
 	./monte_carlo -r $RANDOM -n 1000 > output.dat
-	awk {' print $2'} < output.dat > temp.dat
-	tail -n 1 temp.dat >> finalestimate.dat
-	sort finalestimate.dat > sorted.dat
+	awk {' print $2'} < output.dat > temp.dat	#gets column with estimates
+	tail -n 1 temp.dat >> finalestimate.dat		#gets the last element in temp.dat (final estimate of that seed)
+	sort finalestimate.dat > sorted.dat		#sorts file for easy checking
 done
+
+#the below block of scripts sorts sorted.dat (containing a list of the final estimates of different monte carlo simulations)
+#into several different blocks for use in a histogram. 
+#first awk seperates data into ranges -> wc -l counts lines which is also number of occurences in that range ->
+#awk prints values in a plottable manner
 > box.dat
 awk ' ($1 < 3.0) {print $1}' sorted.dat | wc -l | awk '{print 3.0, $1}' >> box.dat
 awk ' ($1 > 3.0 && $1 < 3.05) {print $1}' sorted.dat | wc -l | awk '{print 3.05, $1}' >> box.dat
@@ -71,7 +76,7 @@ awk ' ($1 > 3.2) {print $1}' sorted.dat | wc -l | awk '{print 3.25, $1}' >> box.
 
 
 
-
+#heredoc for gnuplot
 gnuplot <<END
 	set terminal pdf
 	set output "frequency.pdf"
