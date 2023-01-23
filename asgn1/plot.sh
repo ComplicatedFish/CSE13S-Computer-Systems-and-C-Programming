@@ -38,7 +38,7 @@ gnuplot <<END
 	set terminal pdf
 	set output "error.pdf"
 	set title "Monte Carlo Error Estimation"
-	set xlabel "x"
+	set xlabel "Iterations"
 	set ylabel "Errors"
 	set yrange [-1:1]
 	set logscale x 4
@@ -56,7 +56,7 @@ END
 > finalestimate.dat	#file is created here to clear it
 for n in {1..100}
 do
-	./monte_carlo -r $RANDOM -n 999 > output.dat
+	./monte_carlo -r $RANDOM -n 1000 > output.dat
 	awk {' print $2'} < output.dat > temp.dat
 	tail -n 1 temp.dat >> finalestimate.dat
 	sort finalestimate.dat > sorted.dat
@@ -75,9 +75,9 @@ awk ' ($1 > 3.2) {print $1}' sorted.dat | wc -l | awk '{print 3.25, $1}' >> box.
 gnuplot <<END
 	set terminal pdf
 	set output "frequency.pdf"
-	set title "Monte Carlo frequency"
-	set xlabel "x"
-	set ylabel "Frequency after 999 iterations"
+	set title "Monte Carlo distribution"
+	set xlabel "final value"
+	set ylabel "distribution"
 	set zeroaxis
 	set xtics ("<3" 3, "3 - 3.05" 3.05, "3.05 - 3.1" 3.1, "3.1 - 3.15" 3.15, "3.15 - 3.2" 3.2, ">3.2" 3.25)
 	set boxwidth -.1 relative
