@@ -29,8 +29,10 @@ int sqrt_newton_iters(void){
     return iters;
 }
 
+/*
 int main(void){
     double newton = sqrt_newton(12);
     printf("result : %16.15f in %d terms\n", newton, iters);
     return 0;
 }
+*/
