@@ -1,12 +1,14 @@
 #include <stdio.h>
 #include <stdint.h>
 #include "mathlib.h"
+#include <unistd.h>
 
-static uint32_t iters = 1;
+static uint32_t iters;
 
 //this function is built upon and translated from python code provided by prof.Long in
 //portable.py
 double sqrt_newton(double x){
+    iters = 0; //resets iters
     double scale = 1;
     double orig = 1;
 
@@ -17,10 +19,12 @@ double sqrt_newton(double x){
         scale = scale * 2;
     }
     double guess = 0;
-    while(absolute(orig - guess)){
+    while(absolute(orig - guess) > EPSILON){
         guess = orig;
         orig = (orig + (x/orig)) / 2;
         iters++;
+        //printf("%16.15f\n", orig);
+        //sleep(1);
     }
     return scale * orig;
 }
