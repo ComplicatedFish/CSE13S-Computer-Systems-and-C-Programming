@@ -12,31 +12,28 @@ double sqrt_newton(double x){
     double scale = 1;
     double orig = 1;
 
-    //this loop takes out factors of 4 from
-    //
+    //this loop takes out factors of 4 from x.
+    //Each 4 taken out means 2 is multiplied to scale
+    //(since 4 is a perfect square and sqrt(4) = 2)
+    //scale will be multiplied later into the final result
     while(x > 4.0){
         x = (x/4.0);
         scale = scale * 2;
     }
-    double guess = 0;
+
+    double guess = 0; //guess will hold the previous value of orig
+                      //and will be used to check if orig has reached
+                      //a degree of precision that is < EPSILON
     while(absolute(orig - guess) > EPSILON){
         guess = orig;
         orig = (orig + (x/orig)) / 2;
         iters++;
-        //printf("%16.15f\n", orig);
-        //sleep(1);
     }
     return scale * orig;
 }
 
+//returns number of iterations sqrt_newton() took
 int sqrt_newton_iters(void){
     return iters;
 }
 
-/*
-int main(void){
-    double newton = sqrt_newton(12);
-    printf("result : %16.15f in %d terms\n", newton, iters);
-    return 0;
-}
-*/

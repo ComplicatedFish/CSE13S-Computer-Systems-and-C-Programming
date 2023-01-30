@@ -87,7 +87,7 @@ int main (int argc, char **argv) {
     //Newton-Raphson square root test
     if (a == 1 || n == 1) {
         for (double d = 0.0; d <= 10.0; d+=0.1){
-            printf("sqrt_newton(%f) = %16.15f, M_E = %16.15f, diff = %16.15f\n", d,  sqrt_newton(d), sqrt(d), absolute(sqrt_newton(d) - sqrt(d)));
+            printf("sqrt_newton(%f) = %16.15f, sqrt(%f) = %16.15f, diff = %16.15f\n", d, sqrt_newton(d), d, sqrt(d), absolute(sqrt_newton(d) - sqrt(d)));
             if (s == 1) {
                 printf("sqrt_newton() terms = %d\n", sqrt_newton_iters());
             }

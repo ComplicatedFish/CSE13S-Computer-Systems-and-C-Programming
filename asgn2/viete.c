@@ -4,12 +4,16 @@
 
 static uint32_t terms;
 
+//Approximation of pi using the viete series
 double pi_viete(void){
-    double orig = sqrt_newton(2.0);
-    uint64_t k = 1;
-    double product = orig/2.0; //first term
+    double orig = sqrt_newton(2.0); //first term
+    uint64_t k = 1; //iteration counter
+    double product = orig/2.0; //product holder starts with first term added
+                               //for ease of use in the loop
     double temp = orig; //to hold numerator temporarily
-    double prevproduct = 0;
+    double prevproduct = 0; //holding the previous product allows checking
+                            //if the next products value is significantly different.
+                            //This allows an exit condition to be set
 
     while(absolute(product - prevproduct) > EPSILON){
         prevproduct = product; //holds the previous product
@@ -27,14 +31,8 @@ double pi_viete(void){
     return product;
 }
 
+//returns number of iterations pi_viete() went through
 int pi_viete_factors(void){
     return terms;
 }
 
-/*
-int main(void){
-    double pi = pi_viete();
-    printf("result : %16.15f in %d terms\n", pi, terms);
-    return 0;
-}
-*/

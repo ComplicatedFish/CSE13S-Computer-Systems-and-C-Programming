@@ -4,10 +4,11 @@
 
 static uint32_t terms;
 
+//approximation of pi using the Bailey-Borwein-Plouffe series
 double pi_bbp(void){
     double orig = 47.0/15.0; //first fraction in bbp series
-    uint64_t k = 1;
-    double sum = orig; //first term
+    uint64_t k = 1; //counter
+    double sum = orig; //sum holder, starts off with term 1 added
     double exp = 1.0; //holds exponent
     while(absolute(orig) > EPSILON){
         exp = exp * (1.0/16.0);
@@ -20,14 +21,8 @@ double pi_bbp(void){
 
 }
 
+//returns number of terms that pi_bbp() goes through
 int pi_bbp_terms(void){
     return terms;
 }
 
-/*
-int main(void){
-    double pi = pi_bbp();
-    printf("result : %16.15f in %d terms\n", pi, terms);
-    return 0;
-}
-*/
