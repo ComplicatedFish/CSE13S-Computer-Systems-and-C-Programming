@@ -15,7 +15,7 @@ double pi_madhava(void){
         orig = (1.0/(2.0*k+1.0))*exp;
         sum += orig;
         k++;
-        printf("%16.15f\n", sqrt_newton(12) * sum); //here for plot.sh, left in for posterity
+        //printf("%16.15f\n", sqrt_newton(12) * sum); //here for plot.sh, left in for posterity
     }
     terms = k;
     sum = sum * sqrt_newton(12);

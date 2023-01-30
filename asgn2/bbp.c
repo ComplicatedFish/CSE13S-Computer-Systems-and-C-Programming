@@ -15,7 +15,7 @@ double pi_bbp(void){
         orig = exp * ((k*(120.0*k + 151.0)+47.0)/(k*(k*(k*(512.0*k + 1024.0)+712.0)+194.0)+15.0));
         sum += orig;
         k++;
-        printf("%16.15f\n", sum);
+        //printf("%16.15f\n", sum);
     }
     terms = k;
     return sum;
