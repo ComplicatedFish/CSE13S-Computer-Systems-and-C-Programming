@@ -15,6 +15,7 @@ double e(void){
         orig = orig * (1.0/k);
         sum += orig;
         k++;
+        printf("%16.15f\n", sum); //used for plot.sh, left in for posterity
     }
     terms = k;
     return sum;

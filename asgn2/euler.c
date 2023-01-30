@@ -13,9 +13,9 @@ double pi_euler(void){
         orig = 1.0/(k * k); //summation equation
         sum += orig; //adding to sum
         k++; //counter incremenation
-        //printf("%16.15f\n", orig); //used only for plot.sh
+        printf("%16.15f\n",sqrt_newton(6.0 * sum)); //used only for plot.sh
     }
-    terms = k;
+    terms = k - 1; //subtracts 1 because k had to start out as one due to needing to be the divisor
     sum = 6.0 * sum;
     sum = sqrt_newton(sum);
     return sum;

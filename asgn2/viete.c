@@ -22,9 +22,7 @@ double pi_viete(void){
         temp = sqrt_newton(temp);
         product = product * orig;
         k++;
-        if (k > 10000){
-            break;
-        }
+        printf("%16.15f\n", 2.0/product);
     }
     terms = k;
     product = 2.0/product;

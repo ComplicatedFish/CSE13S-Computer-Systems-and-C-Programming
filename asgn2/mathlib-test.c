@@ -58,7 +58,8 @@ int main (int argc, char **argv) {
     }
     //Euler's PI series test
     if (a == 1 || r == 1) {
-        printf("pi_euler() = %16.15f, M_PI = %16.15f, diff = %16.15f\n", pi_euler(), M_PI, absolute(pi_euler() - M_PI));
+        double e_pi = pi_euler();
+        printf("pi_euler() = %16.15f, M_PI = %16.15f, diff = %16.15f\n", e_pi, M_PI, absolute(e_pi - M_PI));
         if (s == 1) {
             printf("pi_euler() terms = %d\n", pi_euler_terms());
         }
@@ -96,6 +97,7 @@ int main (int argc, char **argv) {
     return 0;
 }
 
+//help message put here to avoid cluttering main function above with large print statement
 void print_help(void){
     fprintf(stderr,
             "SYNOPSIS\n"
