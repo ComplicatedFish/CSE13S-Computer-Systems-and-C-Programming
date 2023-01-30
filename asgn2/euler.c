@@ -1,16 +1,18 @@
-#include <stdio.h>
-#include <stdint.h>
 #include "mathlib.h"
+
+#include <stdint.h>
+#include <stdio.h>
 
 static uint32_t terms;
 
 //Approximation of pi using Euler Series
-double pi_euler(void){
-    double orig = 1; //term 0. Term 0 is 1 because Euler requires division, and dividing by 0 if undefined
+double pi_euler(void) {
+    double orig
+        = 1; //term 0. Term 0 is 1 because Euler requires division, and dividing by 0 if undefined
     uint_fast64_t k = 1; //counter
     double sum = 0; //holds sum
-    while(absolute(orig) > EPSILON){
-        orig = 1.0/(k * k); //summation equation
+    while (absolute(orig) > EPSILON) {
+        orig = 1.0 / (k * k); //summation equation
         sum += orig; //adding to sum
         k++; //counter incremenation
         //printf("%16.15f\n",sqrt_newton(6.0 * sum)); //used only for plot.sh
@@ -22,7 +24,6 @@ double pi_euler(void){
 }
 
 //returns number of terms pi_viete() goes through
-int pi_euler_terms(void){
+int pi_euler_terms(void) {
     return terms;
 }
-
