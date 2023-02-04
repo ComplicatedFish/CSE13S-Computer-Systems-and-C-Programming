@@ -28,6 +28,7 @@ void shell_sort(Stats *stats, uint32_t *arr, uint32_t length){
 }
 
 //main for testing puposes
+/*
 int main(void){
     Stats stat;
     uint32_t arr[] = {3,4,7,2,1,5,6,14,11,13,12,16,20,9,8};
@@ -39,3 +40,5 @@ int main(void){
     }
     return 0;
 }
+*/
+
