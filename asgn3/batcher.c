@@ -45,7 +45,7 @@ void batcher_sort(Stats *stats, uint32_t *A, uint32_t n){
         p = p >> 1;
     }
 }
-
+/*
 int main(void){
     Stats stat;
     //reset(&stat);
@@ -66,4 +66,4 @@ int main(void){
     free(A);
     return 0;
 }
-
+*/
