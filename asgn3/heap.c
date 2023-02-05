@@ -56,6 +56,7 @@ void heap_sort(Stats *stats, uint32_t *A, uint32_t n){
 }
 
 //main for testing purposes
+/*
 int main(void){
     Stats stat;
     uint32_t length = 15;
@@ -73,4 +74,4 @@ int main(void){
         printf("%u\n", A[i]);
     }
     return 0;
-}
+}*/
