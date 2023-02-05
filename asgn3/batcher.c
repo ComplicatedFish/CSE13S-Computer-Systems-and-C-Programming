@@ -38,9 +38,12 @@ void batcher_sort(Stats *stats, uint32_t *A, uint32_t n){
                     comparator(stats, A, i, i + d);
                 }
             }
+            d = q - p;
+            q = q >> 1;
+            r = p;
         }
+        p = p >> 1;
     }
-
 }
 
 int main(void){
@@ -55,7 +58,7 @@ int main(void){
         A[i] = arr[i];
     }
 
-    quick_sort(&stat, A, length);
+    batcher_sort(&stat, A, length);
 
     for(uint32_t i = 0; i < length; i++) {
         printf("%u\n", A[i]);
