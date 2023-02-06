@@ -17,6 +17,8 @@ uint32_t max_child(Stats *stats, uint32_t *A, uint32_t first, uint32_t last) {
     return left;
 }
 
+//this block "fixes" the heap when elements are moved since a heap
+//is a very specific structure and moving elements destabalizes the heap
 void fix_heap(Stats *stats, uint32_t *A, uint32_t first, uint32_t last) {
     bool found = false;
     uint32_t mother = first;
@@ -34,6 +36,7 @@ void fix_heap(Stats *stats, uint32_t *A, uint32_t first, uint32_t last) {
     return;
 }
 
+//builds the heap data structure
 void build_heap(Stats *stats, uint32_t *A, uint32_t first, uint32_t last) {
     for (uint32_t father = (last / 2); father > first - 1; father--) {
         fix_heap(stats, A, father, last);
@@ -41,6 +44,7 @@ void build_heap(Stats *stats, uint32_t *A, uint32_t first, uint32_t last) {
     return;
 }
 
+//main heap sort code
 void heap_sort(Stats *stats, uint32_t *A, uint32_t n) {
     uint32_t first = 1;
     uint32_t last = n;
