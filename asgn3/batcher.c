@@ -19,9 +19,9 @@ void batcher_sort(Stats *stats, uint32_t *A, uint32_t n){
     //to find the most significant bit and return
     //its index, which corresponds with bit length
     uint32_t t = 0; //will hold bit length
-    for (uint32_t i = 0; i < sizeof(n)*8; i++){
+    for (uint32_t i = 0; i < sizeof(uint32_t)*8; i++){
         if ((n >> i) & 1){
-            t = i;
+            t = i + 1; //length doesn't start at 0, adding 1 to account for that
         }//this conditional returns true if bit index 0 if set to 1
          //after being shifted to the right i times.
     }
@@ -45,25 +45,4 @@ void batcher_sort(Stats *stats, uint32_t *A, uint32_t n){
         p = p >> 1;
     }
 }
-/*
-int main(void){
-    Stats stat;
-    //reset(&stat);
-    uint32_t length = 15;
-    uint32_t arr[] = {3,4,7,2,1,5,6,14,11,13,12,16,20,9,8};
-    uint32_t *A;
-    A = (uint32_t *) malloc(length * sizeof(uint32_t));
 
-    for (uint32_t i = 0; i < length; i++){
-        A[i] = arr[i];
-    }
-
-    batcher_sort(&stat, A, length);
-
-    for(uint32_t i = 0; i < length; i++) {
-        printf("%u\n", A[i]);
-    }
-    free(A);
-    return 0;
-}
-*/

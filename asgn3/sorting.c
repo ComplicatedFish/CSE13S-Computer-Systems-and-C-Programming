@@ -17,44 +17,22 @@
  * as a reference for making this main() file. I directly copied the
  * print_elements() and reset_array() functions from my code from last year
  * since I made them on my own as helper functions (They were not required)
- *
- *
-*/
+ */
 
 //allows for clear and readable usage of sets in main()
 enum options {shell, quick, heap, batcher, help};
 
+//helper function to print help message. Below main to avoid clutter
+void print_help(void);
+
 //NOTE: THIS IS A DIRECTLY COPIED (with slight edits to make it work on this assignment)
 //FUNCTION from assignment 4 sorting.c from last year. This is a helper function that just
-//prints the sorts according to specification
-void print_elements(uint32_t *arr, uint32_t size, uint32_t elements) {
-    uint32_t check; //
-    if (elements < size) {
-        for (uint32_t i = 0; i < elements; i++){
-            printf("%13" PRIu32, arr[i]);
-            check = i;
-            if (i % 5 == 4) {
-                printf("\n");
-            }
-        }
-        if (check % 5 == 1) {return;} else {printf("\n");}
-        return;
-    }
-    for (uint32_t i = 0; i < size; i++) {
-        printf("%13" PRIu32, arr[i]);
-        check = i;
-        if (i % 5 == 4) {
-            printf("\n");
-        }
-    }
-    if (check % 5 == 1) {return;} else {printf("\n");}
-
-}
+//prints the sorts according to specification. Function body is below main() to avoid clutter
+void print_elements(uint32_t *arr, uint32_t size, uint32_t elements);
 
 //NOTE: This is another function taken from my own code from last year.
 //This is a helper function that resets the array back to the original
 //values so that the same numbers can be tested on each sort
-
 void reset_array(uint32_t *arr, uint32_t *orig_arr, uint32_t n) {
     for (uint32_t x = 0; x <= n; x++) {
         arr[x] = orig_arr[x];
@@ -72,6 +50,9 @@ int main(int argc, char **argv){
     Stats stats;
     reset(&stats);
 
+    s = set_insert(s, help); //defaults to requiring help
+                             //removed if sort specified
+
     while ((opt = getopt(argc, argv, OPTIONS)) != -1) {
         switch(opt) {
             case 'a':
@@ -81,15 +62,19 @@ int main(int argc, char **argv){
                 s = set_insert(s, quick);
                 break;
             case 'h':
+                s = set_remove(s, help);
                 s = set_insert(s, heap);
                 break;
             case 'b':
+                s = set_remove(s, help);
                 s = set_insert(s, batcher);
                 break;
             case 's':
+                s = set_remove(s, help);
                 s = set_insert(s, shell);
                 break;
             case 'q':
+                s = set_remove(s, help);
                 s = set_insert(s, quick);
                 break;
             case 'r':
@@ -111,7 +96,6 @@ int main(int argc, char **argv){
             default:
                 s = set_insert(s, help);
                 break;
-
         }
     }
 
@@ -130,10 +114,18 @@ int main(int argc, char **argv){
         orig_arr[x] = arr[x];
     }
 
+    if (set_member(s, help)){
+        if (argc == 1){
+            printf("Select at least one sort to perform.\n");
+        }
+        print_help();
+        return 2;
+    }
+
     reset(&stats);
     if (set_member(s, shell)){
         shell_sort(&stats, arr, size);
-        printf("Shell Sort, %u elements, %lu moves, %lu compares\n", elements, stats.moves, stats.compares);
+        printf("Shell Sort, %u elements, %lu moves, %lu compares\n", size, stats.moves, stats.compares);
         print_elements(arr, size, elements);
         reset_array(arr, orig_arr, size);
     }
@@ -141,7 +133,7 @@ int main(int argc, char **argv){
     reset(&stats);
     if (set_member(s, batcher)){
         batcher_sort(&stats, arr, size);
-        printf("Batcher Sort, %u elements, %lu moves, %lu compares\n", elements, stats.moves, stats.compares);
+        printf("Batcher Sort, %u elements, %lu moves, %lu compares\n", size, stats.moves, stats.compares);
         print_elements(arr, size, elements);
         reset_array(arr, orig_arr, size);
     }
@@ -149,20 +141,18 @@ int main(int argc, char **argv){
     reset(&stats);
     if (set_member(s, heap)){
         heap_sort(&stats, arr, size);
-        printf("Heap Sort, %u elements, %lu moves, %lu compares\n", elements, stats.moves, stats.compares);
+        printf("Heap Sort, %u elements, %lu moves, %lu compares\n", size, stats.moves, stats.compares);
         print_elements(arr, size, elements);
         reset_array(arr, orig_arr, size);
     }
 
     reset(&stats);
-    if (set_member(s, shell)){
+    if (set_member(s, quick)){
         quick_sort(&stats, arr, size);
-        printf("Quick Sort, %u elements, %lu moves, %lu compares\n", elements, stats.moves, stats.compares);
+        printf("Quick Sort, %u elements, %lu moves, %lu compares\n", size, stats.moves, stats.compares);
         print_elements(arr, size, elements);
         reset_array(arr, orig_arr, size);
     }
-
-
 
     free(arr);
     free(orig_arr);
@@ -170,3 +160,53 @@ int main(int argc, char **argv){
     return 0;
 }
 
+
+
+//REPOSTED NOTE: THIS IS A DIRECTLY COPIED (with slight edits to make it work on this assignment)
+//FUNCTION from assignment 4 sorting.c from last year. This is a helper function that just
+//prints the sorts according to specification. Function body is below main() to avoid clutter
+void print_elements(uint32_t *arr, uint32_t size, uint32_t elements) {
+    uint32_t check; //
+    if (elements < size) {
+        for (uint32_t i = 0; i < elements; i++){
+            printf("%13" PRIu32, arr[i]);
+            check = i;
+            if (i % 5 == 4) {
+                printf("\n");
+            }
+        }
+        if (check % 5 == 1) {return;} else {printf("");}
+        return;
+    }
+    for (uint32_t i = 0; i < size; i++) {
+        printf("%13" PRIu32, arr[i]);
+        check = i;
+        if (i % 5 == 4) {
+            printf("\n");
+        }
+    }
+    if (check % 5 == 1) {return;} else {printf("");}
+
+}
+
+void print_help(void) {
+    fprintf(stderr,
+        "SYNOPSIS\n"
+        "   A small collection of sorting functions. Includes Shell Sort,\n"
+        "   heapsort, quicksort, and batcher (merge) sort\n"
+        "\n"
+        "USAGE\n"
+        "   ./sorting [-ahbsqr:n:p:H]\n"
+        "\n"
+        "OPTIONS\n"
+        "   -a              Runs all tests.\n"
+        "   -h              Runs Heapsort.\n"
+        "   -b              Runs Batcher's Odd-Even Merge Sort.\n"
+        "   -s              Runs Shell Sort.\n"
+        "   -q              Runs Quicksort\n"
+        "   -r seed         Sets the seed for the random number generator that populates the array\n"
+        "   -n length       Sets the size of the array to be sorted\n"
+        "   -p elements     Sets the number of elements to be printed for each sort.\n"
+        "   -H              Prints help message (this message).\n");
+    return;
+}

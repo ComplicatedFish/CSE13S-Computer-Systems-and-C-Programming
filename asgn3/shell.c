@@ -12,11 +12,11 @@ void shell_sort(Stats *stats, uint32_t *arr, uint32_t length){
         for (uint32_t i = gaps[index]; i < length; i++) {
             uint32_t j = i;
             uint32_t temp = move(stats, arr[i]); //move() is used here since arr element being moved to temp var
-            while (j >= gaps[index] && temp < arr[j-gaps[index]]){ //use cmp later
+            while (j >= gaps[index] && cmp(stats, temp, arr[j-gaps[index]]) < 0){
                 arr[j] = move(stats, arr[j - gaps[index]]);
                 j = j - gaps[index];
             }
-            arr[j] = temp;
+            arr[j] = move(stats, temp);
         }
         if (gaps[index] == 1){
             break; //this conditional checks if the final value of the gap sequence has been reached
@@ -26,19 +26,4 @@ void shell_sort(Stats *stats, uint32_t *arr, uint32_t length){
     }
     return;
 }
-
-//main for testing puposes
-/*
-int main(void){
-    Stats stat;
-    uint32_t arr[] = {3,4,7,2,1,5,6,14,11,13,12,16,20,9,8};
-    uint32_t length = 15;
-    shell_sort(&stat, arr, length);
-
-    for(uint32_t i = 0; i < length; i++) {
-        printf("%u\n", arr[i]);
-    }
-    return 0;
-}
-*/
 

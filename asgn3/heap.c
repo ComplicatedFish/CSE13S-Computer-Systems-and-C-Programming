@@ -11,10 +11,8 @@ uint32_t max_child(Stats *stats, uint32_t *A, uint32_t first, uint32_t last){
     uint32_t left = 2 * first;
     uint32_t right = left + 1;
     if ((right <= last) && cmp(stats, A[right - 1], A[left -1]) == 1 ){
-        printf("max_child reached\n");
         return right;
     }
-    printf("left child reached\n");
     return left;
 }
 
@@ -24,12 +22,11 @@ void fix_heap(Stats *stats, uint32_t *A, uint32_t first, uint32_t last){
     uint32_t great = max_child(stats, A, mother, last);
 
     while ((mother <= (last / 2)) && found == false){
-        if (A[mother - 1] < A[great - 1]){
+        if (cmp(stats, A[mother - 1], A[great - 1]) < 0){
             swap(stats, &A[mother - 1], &A[great - 1]);
             mother = great;
             great = max_child(stats, A, mother, last);
         } else {
-            printf("fix_heap reached, found = true\n");
             found = true;
         }
     }
@@ -55,23 +52,3 @@ void heap_sort(Stats *stats, uint32_t *A, uint32_t n){
     return;
 }
 
-//main for testing purposes
-/*
-int main(void){
-    Stats stat;
-    uint32_t length = 15;
-    uint32_t arr[] = {3,4,7,2,1,5,6,14,11,13,12,16,20,9,8};
-    uint32_t *A;
-    A = (uint32_t *) malloc(length * sizeof(uint32_t));
-
-    for (uint32_t i = 0; i < length; i++){
-        A[i] = arr[i];
-    }
-
-    heap_sort(&stat, A, length);
-
-    for(uint32_t i = 0; i < length; i++) {
-        printf("%u\n", A[i]);
-    }
-    return 0;
-}*/
