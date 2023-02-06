@@ -34,7 +34,7 @@ void print_elements(uint32_t *arr, uint32_t size, uint32_t elements);
 //This is a helper function that resets the array back to the original
 //values so that the same numbers can be tested on each sort
 void reset_array(uint32_t *arr, uint32_t *orig_arr, uint32_t n) {
-    for (uint32_t x = 0; x <= n; x++) {
+    for (uint32_t x = 0; x < n; x++) {
         arr[x] = orig_arr[x];
     }
 }
@@ -56,6 +56,7 @@ int main(int argc, char **argv){
     while ((opt = getopt(argc, argv, OPTIONS)) != -1) {
         switch(opt) {
             case 'a':
+                s = set_remove(s, help);
                 s = set_insert(s, shell);
                 s = set_insert(s, heap);
                 s = set_insert(s, batcher);
@@ -119,6 +120,8 @@ int main(int argc, char **argv){
             printf("Select at least one sort to perform.\n");
         }
         print_help();
+        free(arr);
+        free(orig_arr);
         return 2;
     }
 
