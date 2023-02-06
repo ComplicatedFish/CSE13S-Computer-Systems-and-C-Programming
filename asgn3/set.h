@@ -1,8 +1,8 @@
 #ifndef __SET_H__
 #define __SET_H__
 
-#include <stdint.h>
 #include <stdbool.h>
+#include <stdint.h>
 
 typedef uint32_t Set;
 

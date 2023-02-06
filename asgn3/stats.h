@@ -3,8 +3,8 @@
 #include <stdint.h>
 
 typedef struct {
-   uint64_t moves;
-   uint64_t compares;
+    uint64_t moves;
+    uint64_t compares;
 } Stats;
 
 int cmp(Stats *stats, uint32_t x, uint32_t y);
