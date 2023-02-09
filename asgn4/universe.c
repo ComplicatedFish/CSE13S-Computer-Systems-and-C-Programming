@@ -21,9 +21,17 @@ Universe *uv_create(uint32_t rows, uint32_t cols, bool toroidal){
 }
 
 void uv_delete(Universe *u){
-    
+    for(int i = 0; i < u->cols; i++){
+        free(u->grid[i]);
+        u->grid[i] = NULL;
+    }
+    free(u->grid);
+    u->grid = NULL;
+    free(u);
+    u = NULL;
 }
 
+/*
 uint32_t uv_rows(Universe *u);
 
 uint32_t uv_cols(Universe *u);
@@ -39,3 +47,10 @@ bool uv_populate(Universe *u, FILE *infile);
 uint32_t uv_census(Universe *u, uint32_t r, uint32_t c);
 
 void uv_print(Universe *u, FILE *outfile);
+*/
+
+int main(void){
+    Universe u = uv_create(5, 5, false);
+    printf("%u\n", u->rows);
+    return 0;
+}
