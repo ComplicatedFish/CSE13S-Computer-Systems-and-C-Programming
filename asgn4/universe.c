@@ -2,6 +2,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include "universe.h"
+#include "inttypes.h"
 
 struct Universe {
     uint32_t rows;
@@ -62,7 +63,7 @@ uint32_t uv_cols(Universe *u){
 //to true (to emulate a live cell in the game of life).
 //returns 
 void uv_live_cell(Universe *u, uint32_t r, uint32_t c){
-    if (r < 0 && c < 0) {return;}
+    //if (r < 0 && c < 0) {return;}
     if (r < u->rows && c < u->cols){
         u->grid[r][c] = true;
     }
@@ -71,7 +72,7 @@ void uv_live_cell(Universe *u, uint32_t r, uint32_t c){
 //ooposite of uv_live_cell(), sets the cell at row r and
 //column c to false (deal cell)
 void uv_dead_cell(Universe *u, uint32_t r, uint32_t c){
-    if (r < 0 && c < 0) {return;}
+    //if (r < 0 && c < 0) {return;}
     if (r < u->rows && c < u->cols){
         u->grid[r][c] = false;
     }
@@ -80,35 +81,97 @@ void uv_dead_cell(Universe *u, uint32_t r, uint32_t c){
 //uses same conditions as uv_live_cell() to get the value
 //of the cell. If out of bounds, returns false.
 bool uv_get_cell(Universe *u, uint32_t r, uint32_t c){
-    if (r >= 0 && c >= 0 && r < u->rows && c < u->cols){
+    if (/*r >= 0 && c >= 0 && */r < u->rows && c < u->cols){
         return u->grid[r][c];
     } else {
         return false;
     }
 }
 
-
+//populates the grid with cells according to data in infile.
+//runs until fscanf reads pairs of data. Conditional in the while()
+//loop checks if uv_live_cell() worked. Function as a boundary checker,
+//since uv_live_cell() will only fail to make a cell if the cell index
+//is of bounds
 bool uv_populate(Universe *u, FILE *infile){
     uint32_t x, y;
-    while
+    while (fscanf(infile, "%" SCNd32 "%" SCNd32 "", &x, &y) != EOF){
+        uv_live_cell(u, x, y);
+        if (uv_get_cell(u, x, y) == false){
+            return false;
+        }
+    }
+    return true;
 }
 
-/*
-uint32_t uv_census(Universe *u, uint32_t r, uint32_t c);
 
-void uv_print(Universe *u, FILE *outfile);
-*/
+uint32_t uv_census(Universe *u, uint32_t r, uint32_t c){
+    uint32_t num_neighbors = 0;
+    if (u->toroidal){
+        for (int i = -1; i <= 1; i++){
+            for (int j = -1; j <= 1; j++){
+                if (j == 1 && i == 1){continue;} //cell being censused doesn't count
+                if (uv_get_cell(u, ((int32_t)r-1)%(u->rows), ((int32_t)c-1)%(u->cols))){
+                    num_neighbors++;
+                }
+            }
+        }
+    } else {
+        for (int i = -1; i <= 1; i++){
+            for (int j = -1; j <= 1; j++){
+                if (j == 1 && i == 1){continue;} //cell being censused doesn't count
+                if (uv_get_cell(u, ((int32_t)r-1), ((int32_t)c-1))){
+                    num_neighbors++;
+                }
+            }
+        }
+    }
+    return num_neighbors;
+}
+
+
+void uv_print(Universe *u, FILE *outfile){
+    for (uint32_t r = 0; r < u->rows; r++){
+        for (uint32_t c = 0; c < u->cols; c++){
+            if(uv_get_cell(u, r, c)){
+                fputc(111, outfile); //111 is ASCII for lowercase o
+            } else {
+                fputc(46, outfile); //46 is ASCII for period
+            }
+        }
+        fputc(10, outfile); //10 is ASCII for newline
+        //fprintf(stderr, "row %u col %u\n", r, c);
+    }
+    return;
+}
+
 
 int main(void){
-    Universe *u = uv_create(5, 5, false);
-    printf("%u\n", uv_rows(u));
+    Universe *u = uv_create(50, 50, false);
+    printf("%"PRIu32" rows, %"PRIu32" cols\n", uv_rows(u), uv_cols(u));
     uv_live_cell(u, 4, 4);
-    printf(uv_get_cell(u, 4, 4) ? "true\n" : "false\n");
-    printf(uv_get_cell(u, 5, 4) ? "true\n" : "false\n");
-    printf(uv_get_cell(u, 1, 2) ? "true\n" : "false\n");
-    printf(uv_get_cell(u, 2, 3) ? "true\n" : "false\n");
-    uv_live_cell(u, 2, 3);
-    printf(uv_get_cell(u, 2, 3) ? "true\n" : "false\n");
+
+    FILE *fp;
+    FILE *tp;
+    fp = fopen("test.txt", "w");
+    uv_print(u, fp);
+    fclose(fp);
+
+    uv_dead_cell(u, 2, 3);
+    uv_dead_cell(u, 4, 4);
+
+    uv_live_cell(u, 4, 4);
+    uv_live_cell(u, 2, 4);
+    uv_live_cell(u, 4, 2);
+    uv_live_cell(u, 2, 2);
+
+    fp = fopen("lists/101.txt", "r");
+    tp = fopen("test.txt", "w");
+    //uv_populate(u, fp);
+    uv_print(u, tp);
+    fclose(fp);
+    fclose(tp);
+
     uv_delete(u);
     return 0;
 }
