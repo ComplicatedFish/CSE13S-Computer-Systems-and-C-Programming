@@ -18,8 +18,12 @@ int main(int argc, char **argv){
     bool s = true; //determines ncurses display
     uint32_t n_generations = 100;
     //uint32_t h = false; //help message eligibility
-    char *input = (char *)malloc(PATH_MAX); //PATH_MAX from limits.h stores maximum path length
-    char *output = (char *)malloc(PATH_MAX);
+    //char *input = (char *)malloc(PATH_MAX); //PATH_MAX from limits.h stores maximum path length
+    //char *output = (char *)malloc(PATH_MAX);
+    FILE *input = stdin;
+    FILE *output = stdout;
+    //input = stdin";
+    //output = "stdout";
     int opt = 0;
     while ((opt = getopt(argc, argv, OPTIONS)) != -1) {
         switch(opt) {
@@ -33,10 +37,10 @@ int main(int argc, char **argv){
                 n_generations = strtoul(optarg, NULL, 10);
                 break;
             case 'i':
-                input = strcpy(input, optarg);
+                input = fopen(optarg, "r");
                 break;
             case 'o':
-                output = strcpy(output, optarg);
+                output = fopen(optarg, "w");
                 break;
             default:
                 //h = true;
@@ -48,17 +52,20 @@ int main(int argc, char **argv){
     uint32_t rows;
     uint32_t cols;
 
-    FILE *fp;
-    fp = fopen(input, "r");
-    fscanf(fp, "%" SCNd32 "%" SCNd32 "", &rows, &cols);
+    //FILE *fp;
+    //fp = fopen(input, "r");
+    fscanf(input, "%" SCNd32 "%" SCNd32 "", &rows, &cols);
     Universe *A = uv_create(rows, cols, t);
     Universe *B = uv_create(rows, cols, t);
 
-    uv_populate(A, fp);
-    fclose(fp);
+    uv_populate(A, input);
+    fclose(input);
 
-    initscr();
-    curs_set(FALSE);
+    if(s){
+        initscr();
+        curs_set(FALSE);
+    }
+
     for (uint32_t n = 0; n < n_generations; n++){
         if(s){
             clear();
@@ -77,13 +84,20 @@ int main(int argc, char **argv){
         }
         for (uint32_t r = 0; r < uv_rows(A); r++){
             for (uint32_t c = 0; c < uv_cols(A); c++){
+                printf("uv_census results: %u\n", uv_census(A, 4, 0));
+                printf(uv_get_cell(A, 4, 0) ? "true\n" : "false\n");
+
                 if (uv_get_cell(A, r, c)){
+                    //printf(uv_get_cell(A, 4, 0) ? "true\n" : "false\n");
                     if (uv_census(A, r, c) == 2 || uv_census(A, r, c) == 3){
+                        //printf("if (live cell) uv_census results: %u\n", uv_census(A, 4, 0));
                         uv_live_cell(B, r, c);
                     } else {
                         uv_dead_cell(B, r, c);
                     }
                 } else {
+                    //printf(uv_get_cell(A, 4, 0) ? "true\n" : "false\n");
+                    //printf("else (dead cell) uv_census results: %u\n", uv_census(A, 4, 0));
                     if (uv_census(A, r, c) == 3){
                         uv_live_cell(B, r, c);
                     }
@@ -94,15 +108,24 @@ int main(int argc, char **argv){
         Universe *temp = A;
         A = B;
         B = temp;
+        //swap(A, B);
     }
-    endwin();
+    if(s){
+        endwin();
+    }
 
-    FILE *out;
-    out = fopen(output, "w");
-    uv_print(A, out);
-    fclose(out);
+    //FILE *out;
+    //out = fopen(output, "w");
+    printf("uv_census results: %u\n", uv_census(A, 4, 0));
+    printf(uv_get_cell(A, 4, 0) ? "true?????\n" : "false\n");
+    uv_print(A, output);
+    //uv_print(B, output);
+    fclose(output);
 
-
+    uv_delete(A);
+    uv_delete(B);
+    return 0;
+}
 
 /*
     printf("%"PRIu32" rows, %"PRIu32" cols\n", uv_rows(u), uv_cols(u));
@@ -133,24 +156,4 @@ int main(int argc, char **argv){
     printf("n : %u\n", n_generations);
     printf("ncurses: %d\n", s);
 */
-
-    uv_delete(A);
-    uv_delete(B);
-    free(output);
-    free(input);
-    return 0;
-}
-/*
-int main ( void ) {
-    initscr () ;            // Initialize the screen .
-    curs_set ( FALSE ) ;    // Hide the cursor .
-    for ( int col = 0; col < 40; col += 1) {
-        clear () ;          // Clear the window .
-        mvprintw (ROW , col , "o") ; // Displays "o".
-        refresh () ;        // Refresh the window .
-        usleep ( DELAY ) ;  // Sleep for 50000 microseconds .
-    }
-    endwin () ;             // Close the screen .
-    return 0;
-}*/
 
