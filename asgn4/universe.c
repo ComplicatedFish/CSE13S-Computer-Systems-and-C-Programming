@@ -110,8 +110,8 @@ uint32_t uv_census(Universe *u, uint32_t r, uint32_t c){
     if (u->toroidal){
         for (int i = -1; i <= 1; i++){
             for (int j = -1; j <= 1; j++){
-                if (j == 1 && i == 1){continue;} //cell being censused doesn't count
-                if (uv_get_cell(u, ((int32_t)r-1)%(u->rows), ((int32_t)c-1)%(u->cols))){
+                if (j == 0 && i == 0){continue;} //cell being censused doesn't count
+                if (uv_get_cell(u, ((int32_t)r-i)%(u->rows), ((int32_t)c-j)%(u->cols))){
                     num_neighbors++;
                 }
             }
@@ -119,8 +119,8 @@ uint32_t uv_census(Universe *u, uint32_t r, uint32_t c){
     } else {
         for (int i = -1; i <= 1; i++){
             for (int j = -1; j <= 1; j++){
-                if (j == 1 && i == 1){continue;} //cell being censused doesn't count
-                if (uv_get_cell(u, ((int32_t)r-1), ((int32_t)c-1))){
+                if (j == 0 && i == 0){continue;} //cell being censused doesn't count
+                if (uv_get_cell(u, ((int32_t)r-i), ((int32_t)c-j))){
                     num_neighbors++;
                 }
             }
@@ -145,7 +145,7 @@ void uv_print(Universe *u, FILE *outfile){
     return;
 }
 
-
+/*
 int main(void){
     Universe *u = uv_create(50, 50, false);
     printf("%"PRIu32" rows, %"PRIu32" cols\n", uv_rows(u), uv_cols(u));
@@ -164,6 +164,7 @@ int main(void){
     uv_live_cell(u, 2, 4);
     uv_live_cell(u, 4, 2);
     uv_live_cell(u, 2, 2);
+    uint32_t temp = uv_census(u, 3, 3);
 
     fp = fopen("lists/101.txt", "r");
     tp = fopen("test.txt", "w");
@@ -171,7 +172,9 @@ int main(void){
     uv_print(u, tp);
     fclose(fp);
     fclose(tp);
+    printf("%u\n", temp);
 
     uv_delete(u);
     return 0;
-}
+}*/
+
