@@ -104,7 +104,12 @@ bool uv_populate(Universe *u, FILE *infile){
     return true;
 }
 
-
+//checks cells adjacent to row r and column c to determine the number
+//of cells that are alive and dead. If toroidality is enabled, then
+//additional checks need to be made for certain edge indexes since
+//the universe "wraps around" on itself. To check indexes, I used
+//2 for loops that loop over the 8 block area around the cell to be
+//censused.
 uint32_t uv_census(Universe *u, uint32_t r, uint32_t c){
     uint32_t num_neighbors = 0;
     int32_t row_index;
@@ -113,45 +118,29 @@ uint32_t uv_census(Universe *u, uint32_t r, uint32_t c){
         for (int32_t i = -1; i <= 1; i++){
             for (int32_t j = -1; j <= 1; j++){
                 if (j == 0 && i == 0){continue;} //cell being censused doesn't count
-                //if (((int32_t)r + i) < 0){
-                //    uv_get_cell(u, u->rows - 1,)
-                //}
-                
+
                 //since C can't do arithmetic modulo (where -1 mod 5 = 4) we have to account
                 //for cases where we have to census cells in row 0 or column 0. This means
                 //we have to subtract 1 from the num_rows and num_cols to obtain the index
-                //at the end that is required to be checked when toroidality is enabled
+                //at u->rows-1 that is required to be checked when toroidality is enabled
                 if (r == 0 && i == -1){
-                    //row_index = ((int32_t)r+i)%((int32_t)u->rows) + (int32_t)u->rows;
                     row_index = (int32_t)u->rows - 1;
                 } else {
                     row_index = ((int32_t)r+i)%((int32_t)u->rows);
                 }
 
                 if (c == 0 && j == -1){
-                    //col_index = ((int32_t)c+j)%((int32_t)u->cols) + (int32_t)u->cols;
                     col_index = (int32_t)u->cols - 1;
                 } else {
                     col_index = ((int32_t)c+j)%((int32_t)u->cols);
                 }
-                //printf("negative %d\n", ((-1)%5));
 
-
-
-
-
-                //if (uv_get_cell(u, ((int32_t)r+i)%((int32_t)u->rows), ((int32_t)c+j)%((int32_t)u->cols))){ //apparently there's a difference between modulo in C and "Euclidean modulo"???
-                //if (col_index < 0){
-                //    
-                //    continue;
-                //}
                 if (uv_get_cell(u, row_index, col_index)){
-                    //printf("row %d col %d\n", row_index, col_index);
                     num_neighbors++;
                 }
             }
         }
-    } else {
+    } else { //normal case
         for (int i = -1; i <= 1; i++){
             for (int j = -1; j <= 1; j++){
                 if (j == 0 && i == 0){continue;} //cell being censused doesn't count
@@ -164,7 +153,7 @@ uint32_t uv_census(Universe *u, uint32_t r, uint32_t c){
     return num_neighbors;
 }
 
-
+//prints the grid within universe u cell by cell using fputc
 void uv_print(Universe *u, FILE *outfile){
     for (uint32_t r = 0; r < u->rows; r++){
         for (uint32_t c = 0; c < u->cols; c++){
@@ -175,41 +164,7 @@ void uv_print(Universe *u, FILE *outfile){
             }
         }
         fputc(10, outfile); //10 is ASCII for newline
-        //fprintf(stderr, "row %u col %u\n", r, c);
     }
     return;
 }
-
-/*
-int main(void){
-    Universe *u = uv_create(50, 50, false);
-    printf("%"PRIu32" rows, %"PRIu32" cols\n", uv_rows(u), uv_cols(u));
-    uv_live_cell(u, 4, 4);
-
-    FILE *fp;
-    FILE *tp;
-    fp = fopen("test.txt", "w");
-    uv_print(u, fp);
-    fclose(fp);
-
-    uv_dead_cell(u, 2, 3);
-    uv_dead_cell(u, 4, 4);
-
-    uv_live_cell(u, 4, 4);
-    uv_live_cell(u, 2, 4);
-    uv_live_cell(u, 4, 2);
-    uv_live_cell(u, 2, 2);
-    uint32_t temp = uv_census(u, 3, 3);
-
-    fp = fopen("lists/101.txt", "r");
-    tp = fopen("test.txt", "w");
-    //uv_populate(u, fp);
-    uv_print(u, tp);
-    fclose(fp);
-    fclose(tp);
-    printf("%u\n", temp);
-
-    uv_delete(u);
-    return 0;
-}*/
 
