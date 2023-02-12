@@ -107,11 +107,46 @@ bool uv_populate(Universe *u, FILE *infile){
 
 uint32_t uv_census(Universe *u, uint32_t r, uint32_t c){
     uint32_t num_neighbors = 0;
+    int32_t row_index;
+    int32_t col_index;
     if (u->toroidal){
-        for (int i = -1; i <= 1; i++){
-            for (int j = -1; j <= 1; j++){
+        for (int32_t i = -1; i <= 1; i++){
+            for (int32_t j = -1; j <= 1; j++){
                 if (j == 0 && i == 0){continue;} //cell being censused doesn't count
-                if (uv_get_cell(u, ((int32_t)r+i)%(u->rows), ((int32_t)c+j)%(u->cols))){
+                //if (((int32_t)r + i) < 0){
+                //    uv_get_cell(u, u->rows - 1,)
+                //}
+                
+                //since C can't do arithmetic modulo (where -1 mod 5 = 4) we have to account
+                //for cases where we have to census cells in row 0 or column 0. This means
+                //we have to subtract 1 from the num_rows and num_cols to obtain the index
+                //at the end that is required to be checked when toroidality is enabled
+                if (r == 0 && i == -1){
+                    //row_index = ((int32_t)r+i)%((int32_t)u->rows) + (int32_t)u->rows;
+                    row_index = (int32_t)u->rows - 1;
+                } else {
+                    row_index = ((int32_t)r+i)%((int32_t)u->rows);
+                }
+
+                if (c == 0 && j == -1){
+                    //col_index = ((int32_t)c+j)%((int32_t)u->cols) + (int32_t)u->cols;
+                    col_index = (int32_t)u->cols - 1;
+                } else {
+                    col_index = ((int32_t)c+j)%((int32_t)u->cols);
+                }
+                //printf("negative %d\n", ((-1)%5));
+
+
+
+
+
+                //if (uv_get_cell(u, ((int32_t)r+i)%((int32_t)u->rows), ((int32_t)c+j)%((int32_t)u->cols))){ //apparently there's a difference between modulo in C and "Euclidean modulo"???
+                //if (col_index < 0){
+                //    
+                //    continue;
+                //}
+                if (uv_get_cell(u, row_index, col_index)){
+                    //printf("row %d col %d\n", row_index, col_index);
                     num_neighbors++;
                 }
             }
