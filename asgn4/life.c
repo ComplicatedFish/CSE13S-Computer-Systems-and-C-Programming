@@ -18,12 +18,8 @@ int main(int argc, char **argv){
     bool s = true; //determines ncurses display
     uint32_t n_generations = 100;
     //uint32_t h = false; //help message eligibility
-    //char *input = (char *)malloc(PATH_MAX); //PATH_MAX from limits.h stores maximum path length
-    //char *output = (char *)malloc(PATH_MAX);
     FILE *input = stdin;
     FILE *output = stdout;
-    //input = stdin";
-    //output = "stdout";
     int opt = 0;
     while ((opt = getopt(argc, argv, OPTIONS)) != -1) {
         switch(opt) {
@@ -82,33 +78,41 @@ int main(int argc, char **argv){
             refresh();
             usleep(DELAY);
         }
+        //printf("LOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOP %u\n", n);
         for (uint32_t r = 0; r < uv_rows(A); r++){
             for (uint32_t c = 0; c < uv_cols(A); c++){
-                printf("uv_census results: %u\n", uv_census(A, 4, 0));
-                printf(uv_get_cell(A, 4, 0) ? "true\n" : "false\n");
-
+                //printf("if (live cell) row %u col %u uv_census results: %u\n", r, c, uv_census(A, r, c));
+                //printf(uv_get_cell(A, 4, 0) ? "true\n" : "false\n");
                 if (uv_get_cell(A, r, c)){
-                    //printf(uv_get_cell(A, 4, 0) ? "true\n" : "false\n");
                     if (uv_census(A, r, c) == 2 || uv_census(A, r, c) == 3){
-                        //printf("if (live cell) uv_census results: %u\n", uv_census(A, 4, 0));
+                        //printf(uv_get_cell(A, r, c) ? "true\n" : "false\n");
+                        //printf("if (live cell) row %u col %u uv_census results: %u\n", r, c, uv_census(A, r, c));
                         uv_live_cell(B, r, c);
                     } else {
                         uv_dead_cell(B, r, c);
                     }
                 } else {
-                    //printf(uv_get_cell(A, 4, 0) ? "true\n" : "false\n");
-                    //printf("else (dead cell) uv_census results: %u\n", uv_census(A, 4, 0));
                     if (uv_census(A, r, c) == 3){
+                        //printf(uv_get_cell(A, r, c) ? "true\n" : "false\n");
+                        //printf("else (dead cell) row %u col %u uv_census results: %u\n", r, c, uv_census(A, r, c));
                         uv_live_cell(B, r, c);
+                    } else {
+                        uv_dead_cell(B, r, c);
                     }
                 }
             }
 
         }
-        Universe *temp = A;
+        //uv_print(B, output);
+        Universe *temp;
+        temp = A;
         A = B;
         B = temp;
         //swap(A, B);
+        //BEFORE SLEEP NOTE: THe problem afaik seems to be that
+        //the board is essentially being reset or something between
+        //swaps. Test it out with input.txt, it seems to reset those values
+        //for some reason??? check (4,0) especially
     }
     if(s){
         endwin();
@@ -116,7 +120,7 @@ int main(int argc, char **argv){
 
     //FILE *out;
     //out = fopen(output, "w");
-    printf("uv_census results: %u\n", uv_census(A, 4, 0));
+    printf("uv_census row 4 col 0 results: %u\n", uv_census(A, 4, 0));
     printf(uv_get_cell(A, 4, 0) ? "true?????\n" : "false\n");
     uv_print(A, output);
     //uv_print(B, output);

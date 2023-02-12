@@ -61,7 +61,7 @@ uint32_t uv_cols(Universe *u){
 
 //sets the cell in the u->grid at row r and column c
 //to true (to emulate a live cell in the game of life).
-//returns 
+//returns
 void uv_live_cell(Universe *u, uint32_t r, uint32_t c){
     //if (r < 0 && c < 0) {return;}
     if (r < u->rows && c < u->cols){
@@ -111,7 +111,7 @@ uint32_t uv_census(Universe *u, uint32_t r, uint32_t c){
         for (int i = -1; i <= 1; i++){
             for (int j = -1; j <= 1; j++){
                 if (j == 0 && i == 0){continue;} //cell being censused doesn't count
-                if (uv_get_cell(u, ((int32_t)r-i)%(u->rows), ((int32_t)c-j)%(u->cols))){
+                if (uv_get_cell(u, ((int32_t)r+i)%(u->rows), ((int32_t)c+j)%(u->cols))){
                     num_neighbors++;
                 }
             }
@@ -120,7 +120,7 @@ uint32_t uv_census(Universe *u, uint32_t r, uint32_t c){
         for (int i = -1; i <= 1; i++){
             for (int j = -1; j <= 1; j++){
                 if (j == 0 && i == 0){continue;} //cell being censused doesn't count
-                if (uv_get_cell(u, ((int32_t)r-i), ((int32_t)c-j))){
+                if (uv_get_cell(u, ((int32_t)r+i), ((int32_t)c+j))){
                     num_neighbors++;
                 }
             }
