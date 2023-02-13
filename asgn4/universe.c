@@ -38,7 +38,7 @@ Universe *uv_create(uint32_t rows, uint32_t cols, bool toroidal){
 //the grid memory. Also frees the struct memory.
 
 void uv_delete(Universe *u){
-    for(uint32_t i = 0; i < u->cols; i++){
+    for(uint32_t i = 0; i < u->rows; i++){
         free(u->grid[i]);
         u->grid[i] = NULL;
     }
