@@ -47,6 +47,11 @@ int main(int argc, char **argv) {
         return 2;
     }
 
+    if (input == NULL || output == NULL) {
+        perror("ERROR! : ");
+        return 2;
+    }
+
     uint32_t rows;
     uint32_t cols;
 
@@ -54,7 +59,12 @@ int main(int argc, char **argv) {
     Universe *A = uv_create(rows, cols, t);
     Universe *B = uv_create(rows, cols, t);
 
-    uv_populate(A, input);
+    if (uv_populate(A, input) == false) {
+        uv_delete(A);
+        uv_delete(B);
+        fprintf(stderr, "Error, uv_populate failed!!\n");
+        return 2;
+    }
     fclose(input);
 
     if (s) {
@@ -63,6 +73,9 @@ int main(int argc, char **argv) {
     }
 
     for (uint32_t n = 0; n < n_generations; n++) {
+        //this conditional sets up the ncurses window
+        //which animates the game of life in a text
+        //interface through successive generations
         if (s) {
             clear();
             for (uint32_t r = 0; r < uv_rows(A); r++) {
@@ -78,23 +91,34 @@ int main(int argc, char **argv) {
             refresh();
             usleep(DELAY);
         }
+        /*
+         * The following is the main logic of the game of life.
+         * it loops over every point in the grid using 2 for
+         * loops. The first conditional determines wether
+         * the cell at a specific point is alive or dead
+         * and successive statements bring to life or kill
+         * the cell based on the game rules. The comments within
+         * mark which rule is being followed on certain checks
+         * and actions.
+         */
         for (uint32_t r = 0; r < uv_rows(A); r++) {
             for (uint32_t c = 0; c < uv_cols(A); c++) {
                 if (uv_get_cell(A, r, c)) {
                     if (uv_census(A, r, c) == 2 || uv_census(A, r, c) == 3) {
-                        uv_live_cell(B, r, c);
+                        uv_live_cell(B, r, c); //rule 1
                     } else {
-                        uv_dead_cell(B, r, c);
+                        uv_dead_cell(B, r, c); //rule 3
                     }
                 } else {
                     if (uv_census(A, r, c) == 3) {
-                        uv_live_cell(B, r, c);
+                        uv_live_cell(B, r, c); //rule 2
                     } else {
-                        uv_dead_cell(B, r, c);
+                        uv_dead_cell(B, r, c); //rule 3
                     }
                 }
             }
         }
+        //swap universes
         Universe *temp;
         temp = A;
         A = B;
@@ -113,6 +137,7 @@ int main(int argc, char **argv) {
     return 0;
 }
 
+//helper function to print program help statement
 void print_help(void) {
     fprintf(stderr,
         "SYNOPSIS\n"

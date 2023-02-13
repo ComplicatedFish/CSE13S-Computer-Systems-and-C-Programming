@@ -65,7 +65,6 @@ uint32_t uv_cols(Universe *u) {
 //to true (to emulate a live cell in the game of life).
 //returns
 void uv_live_cell(Universe *u, uint32_t r, uint32_t c) {
-    //if (r < 0 && c < 0) {return;}
     if (r < u->rows && c < u->cols) {
         u->grid[r][c] = true;
     }
@@ -74,7 +73,6 @@ void uv_live_cell(Universe *u, uint32_t r, uint32_t c) {
 //ooposite of uv_live_cell(), sets the cell at row r and
 //column c to false (deal cell)
 void uv_dead_cell(Universe *u, uint32_t r, uint32_t c) {
-    //if (r < 0 && c < 0) {return;}
     if (r < u->rows && c < u->cols) {
         u->grid[r][c] = false;
     }
@@ -83,7 +81,7 @@ void uv_dead_cell(Universe *u, uint32_t r, uint32_t c) {
 //uses same conditions as uv_live_cell() to get the value
 //of the cell. If out of bounds, returns false.
 bool uv_get_cell(Universe *u, uint32_t r, uint32_t c) {
-    if (/*r >= 0 && c >= 0 && */ r < u->rows && c < u->cols) {
+    if (r < u->rows && c < u->cols) {
         return u->grid[r][c];
     } else {
         return false;
