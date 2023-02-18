@@ -1,10 +1,9 @@
 #pragma once
 
-#include <stdbool.h>
-#include <stdint.h>
 #include <stdio.h>
 #include <gmp.h>
-
+#include <stdbool.h>
+#include <stdint.h>
 
 //
 // Generates the components for a new SS key.
@@ -33,7 +32,7 @@ void ss_make_pub(mpz_t p, mpz_t q, mpz_t n, uint64_t nbits, uint64_t iters);
 //  q: second prime number
 //  all mpz_t arguments to be initialized
 //
-void ss_make_priv(mpz_t d, mpz_t pq, mpz_t p, mpz_t q);
+void ss_make_priv(mpz_t d, mpz_t pq, const mpz_t p, const mpz_t q);
 
 //
 // Export SS public key to output stream
@@ -43,7 +42,7 @@ void ss_make_priv(mpz_t d, mpz_t pq, mpz_t p, mpz_t q);
 //  username: login name of keyholder ($USER)
 //  pbfile: open and writable file stream
 //
-void ss_write_pub(mpz_t n, char username[], FILE *pbfile);
+void ss_write_pub(const mpz_t n, const char username[], FILE *pbfile);
 
 //
 // Export SS private key to output stream
@@ -53,7 +52,7 @@ void ss_write_pub(mpz_t n, char username[], FILE *pbfile);
 //  d:  private exponent
 //  pvfile: open and writable file stream
 //
-void ss_write_priv(mpz_t pq, mpz_t d, FILE *pvfile);
+void ss_write_priv(const mpz_t pq, const mpz_t d, FILE *pvfile);
 
 //
 // Import SS public key from input stream
@@ -93,7 +92,7 @@ void ss_read_priv(mpz_t pq, mpz_t d, FILE *pvfile);
 //  n: public exponent/modulus
 //  all mpz_t arguments to be initialized
 //
-void ss_encrypt(mpz_t c, mpz_t m, mpz_t n);
+void ss_encrypt(mpz_t c, const mpz_t m, const mpz_t n);
 
 //
 // Encrypt an arbitrary file
@@ -106,7 +105,7 @@ void ss_encrypt(mpz_t c, mpz_t m, mpz_t n);
 //  outfile: open and writable file stream
 //  n: public exponent and modulus
 //
-void ss_encrypt_file(FILE *infile, FILE *outfile, mpz_t n);
+void ss_encrypt_file(FILE *infile, FILE *outfile, const mpz_t n);
 
 //
 // Decrypt number c into number m
@@ -120,7 +119,7 @@ void ss_encrypt_file(FILE *infile, FILE *outfile, mpz_t n);
 //  pq: private modulus
 //  all mpz_t arguments to be initialized
 //
-void ss_decrypt(mpz_t m, mpz_t c, mpz_t d, mpz_t pq);
+void ss_decrypt(mpz_t m, const mpz_t c, const mpz_t d, const mpz_t pq);
 
 //
 // Decrypt a file back into its original form.
@@ -134,4 +133,4 @@ void ss_decrypt(mpz_t m, mpz_t c, mpz_t d, mpz_t pq);
 //  d: private exponent
 //  pq: private modulus
 //
-void ss_decrypt_file(FILE *infile, FILE *outfile, mpz_t d, mpz_t pq);
+void ss_decrypt_file(FILE *infile, FILE *outfile, const mpz_t d, const mpz_t pq);

@@ -1,7 +1,8 @@
 #pragma once
 
-#include <stdint.h>
+#include <stdio.h>
 #include <gmp.h>
+#include <stdint.h>
 
 extern gmp_randstate_t state;
 
