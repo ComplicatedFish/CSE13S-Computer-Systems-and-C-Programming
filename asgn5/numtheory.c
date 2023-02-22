@@ -130,42 +130,67 @@ void pow_mod(mpz_t o, const mpz_t a, const mpz_t d, const mpz_t n){   //int *o, 
     return;
 }
 
-/*
-bool is_prime(int *n, int iters){//mpz_t n, uint64_t iters){
-    int r = (*n-1)/2;
-    int s = 1;
-    while (r % 2 == 0){
-        r /= 2;
-        s++;
-    }
-    printf("s = %d, r = %d, RAND_MAX = %d\n", s, r, RAND_MAX);
 
-    int a;
-    for (int i = 1; i < iters; i++){
-        a = random() % ((*n) - 4);
-        a += 2;
-        int y = 0;
-        int x = 0;
-        pow_mod(&y, a, r, *n);
+bool is_prime(mpz_t n, uint64_t iters){ //(int *n, int iters){
+    mpz_t r;
+    mpz_t s;
+    mpz_t a;
+    mpz_t y;
+    mpz_t x;
+    mpz_t j;
+    mpz_t two; //holds 2 for use with pow_mod
+
+    mpz_t temp_n; //these temp variables temporarily hold values
+    mpz_t temp_s; //for use within main loop
+    mpz_inits(r, s, a, y, x, temp_n, temp_s, j, two, NULL);
+
+    mpz_sub_ui(r, n, 1);        //r holds (n-1)
+    mpz_fdiv_q_ui(r, r, 2);     //int r = (n-1)/2;
+    mpz_set_ui(s, 1);           //int s = 1;
+    while (mpz_even_p(r)){      //while (r % 2 == 0){ //checks if r is even
+        mpz_fdiv_q_ui(r, r, 2); //r /= 2;
+        mpz_add_ui(s, s, 1);       //s++;
+    }
+    gmp_printf("s = %Zd, r = %Zd\n", s, r);
+
+    //main for loop for the miller rabin primality check
+    //
+    for (uint32_t i = 1; i < iters; i++){
+        //sub by 3 here because urandomm finds a random number
+        //between 0 and n-1, and we have to search in the range
+        //2 to n-2. Since we add the the 2 later (after generation)
+        //to prevent sub-2 numbers, we have to search in the range
+        //0 to n-4. Since urandomm already searched n-1, we add
+        //1 to the upper bound.
+        mpz_sub_ui(temp_n, n, 3);
+
+        mpz_urandomm(a, state, temp_n); //a = random() % ((*n) - 4);
+        mpz_add_ui(a, a, 2);            //a += 2;
+        mpz_set_ui(y, 0);               //int y = 0;
+        mpz_set_ui(x, 0);               //int x = 0;
+        pow_mod(y, a, r, n);
         //printf("%d to the power of %d mod %d == %d\n", a, r, *n, y);
-        if (y != 1 && y!= (*n)-1){
-            int j = 0;
-            while (j <= s-1 && y != (*n)-1){
-                x = y;
-                pow_mod(&y, x, 2, *n);
-                if (y == 1){
+        mpz_sub_ui(temp_n, n, 1);   //temp_n holds (n-1)
+        mpz_sub_ui(temp_s, s, 1);   //temp_s holds (s-1)
+        if (mpz_cmp_ui(y, 1) != 0 && mpz_cmp(y, temp_n) != 0){  //if (y != 1 && y!= *n-1)
+            mpz_set_ui(j, 0);               //int j = 0;
+            while (mpz_cmp(j, temp_s) <= 0 && mpz_cmp(y, temp_n) != 0){ //while (j <= s-1 && y != (*n)-1){
+                mpz_set(x, y);              //x = y;
+                mpz_set_ui(two, 2);
+                pow_mod(y, x, two, n);
+                if (mpz_cmp_ui(y, 1) == 0){ //if (y == 1){
                     return false;
                 }
-                j += 1;
+                mpz_add_ui(j, j, 1);        //j += 1;
             }
-            if (y != (*n)-1){
+            if (mpz_cmp(y, temp_n) != 0){   //if (y != (*n)-1){
                 return false;
             }
         }
     }
     return true;
 }
-*/
+
 /*
 void make_prime(int *p, int bits, int iters){//mpz_t p, uint64_t bits, uint64_t iters){
     
@@ -203,7 +228,8 @@ int main(void){
     mpz_set_ui(n, 84);
     pow_mod(out, a, b, n);
     gmp_printf("the pow_mod is %Zd\n", out);
-    //printf(is_prime(&n, 40) ? "true\n" : "false\n");
+    mpz_set_ui(n, 1436453715);
+    printf(is_prime(n, 40) ? "true\n" : "false\n");
     return 0;
 }
 
