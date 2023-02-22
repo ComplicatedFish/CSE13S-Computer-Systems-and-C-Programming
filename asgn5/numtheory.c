@@ -151,7 +151,7 @@ bool is_prime(mpz_t n, uint64_t iters){ //(int *n, int iters){
         mpz_fdiv_q_ui(r, r, 2); //r /= 2;
         mpz_add_ui(s, s, 1);       //s++;
     }
-    gmp_printf("s = %Zd, r = %Zd\n", s, r);
+    //gmp_printf("s = %Zd, r = %Zd\n", s, r);
 
     //main for loop for the miller rabin primality check
     //
@@ -191,11 +191,14 @@ bool is_prime(mpz_t n, uint64_t iters){ //(int *n, int iters){
     return true;
 }
 
-/*
-void make_prime(int *p, int bits, int iters){//mpz_t p, uint64_t bits, uint64_t iters){
-    
+
+void make_prime(mpz_t p, uint64_t bits, uint64_t iters){ //(int *p, int bits, int iters){
+    mpz_urandomb(p, state, bits);
+    while (is_prime(p, iters) != true){
+        mpz_urandomb(p, state, bits);
+    }
 }
-*/
+
 
 int main(void){
     mpz_t g;
@@ -230,6 +233,8 @@ int main(void){
     gmp_printf("the pow_mod is %Zd\n", out);
     mpz_set_ui(n, 1436453715);
     printf(is_prime(n, 40) ? "true\n" : "false\n");
+    make_prime(n, 32, 40);
+    gmp_printf("%Zd\n", n);
     return 0;
 }
 
