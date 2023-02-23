@@ -193,13 +193,21 @@ bool is_prime(mpz_t n, uint64_t iters){ //(int *n, int iters){
 
 
 void make_prime(mpz_t p, uint64_t bits, uint64_t iters){ //(int *p, int bits, int iters){
+    //for explanation of this see while loop below, this is a copy of the inside
+    //for rare cases where the first generated number is a prime
     mpz_urandomb(p, state, bits);
+    mpz_setbit(p, 0);
+    mpz_setbit(p, bits-1);
+
     while (is_prime(p, iters) != true){
         mpz_urandomb(p, state, bits);
+        mpz_setbit(p, 0); //sets bit index 0 (first bit) which ensures p is not even
+        mpz_setbit(p, bits-1); //sets bit at index "bits" to 1 to ensure p is at least "bits" long
+
     }
 }
 
-
+/*
 int main(void){
     mpz_t g;
     mpz_t i;
@@ -217,7 +225,7 @@ int main(void){
     //int i = 0;
     //int out = 0;
     //int n = 521;
-    randstate_init(1);
+    randstate_init(5);
     gcd(g, a, b);
     gmp_printf("the gcd is %Zd\n", g);
 
@@ -236,5 +244,5 @@ int main(void){
     make_prime(n, 32, 40);
     gmp_printf("%Zd\n", n);
     return 0;
-}
+}*/
 
