@@ -91,18 +91,65 @@ void ss_encrypt(mpz_t c, const mpz_t m, const mpz_t n){
 
 
 void ss_encrypt_file(FILE *infile, FILE *outfile, const mpz_t n){
-    mpz_t k; //holds size of block
-    mpz_inits(k, NULL);
+    mpz_t k;    //holds size of block
+    mpz_t m;    //holds imported message
+    mpz_t c;    //holds encrypted message
+    mpz_inits(k, m, c, NULL);
 
-    
+    //this is the calculation of block size, which will be stores in K
+    mpz_set_ui(k, mpz_sizeinbase(n, 2));    //k = log_2(n)
+    mpz_fdiv_q_ui(k, k, 2);                    //k = k/2 = log_2(n)/2
+    mpz_sub_ui(k, k, 1);                    //k = k-1 = (1/2)log_2(n)-1
+    mpz_fdiv_q_ui(k, k, 8);                    //k = k/8 = [(1/2)log_2(n)-1]/8
+    uint64_t block_size = mpz_get_ui(k);
+
+    uint8_t *buffer = (uint8_t *) calloc(block_size, sizeof(uint8_t));
+    buffer[0] = 0xFF;
+    uint64_t j = 0; //will hold number of bytes read
+    while (!feof(infile)){
+        j = fread(buffer, sizeof(uint8_t), block_size - 1, infile);
+        mpz_import(m, j, 1, sizeof(uint8_t), 1, 0, buffer);
+        ss_encrypt(c, m, n);
+        gmp_fprintf(outfile, "%Zx\n", c);
+    }
+    free(buffer);
+    mpz_clears(k, m, c, NULL);
 }
 
 void ss_decrypt(mpz_t m, const mpz_t c, const mpz_t d, const mpz_t pq){
-    pow_mod(m, c, d, pw);
+    pow_mod(m, c, d, pq);
 }
 
 void ss_decrypt_file(FILE *infile, FILE *outfile, const mpz_t d, const mpz_t pq){
+    mpz_t k;    //holds size of block
+    mpz_t m;    //holds imported message
+    mpz_t c;    //holds encrypted message
+    mpz_inits(k, m, c, NULL);
 
+    //this is the calculation of block size, which will be stores in K
+    mpz_set_ui(k, mpz_sizeinbase(pq, 2));    //k = log_2(pq)
+    mpz_fdiv_q_ui(k, k, 2);                    //k = k/2 = log_2(pq)/2
+    mpz_sub_ui(k, k, 1);                    //k = k-1 = (1/2)log_2(pq)-1
+    mpz_fdiv_q_ui(k, k, 8);                    //k = k/8 = [(1/2)log_2(pq)-1]/8
+    uint64_t block_size = mpz_get_ui(k);
+
+    uint8_t *buffer = (uint8_t *) calloc(block_size, sizeof(uint8_t));
+    //buffer[0] = 0xFF;
+    uint64_t j = 0; //will hold number of bytes converted
+    while (!feof(infile)){
+        gmp_fscanf(infile, "%Qd\n", c);
+        ss_decrypt(m, c, d, pq);
+        mpz_export(buffer, &j, 1, sizeof(uint8_t), 1, 0, m);
+        fwrite(buffer, sizeof(uint8_t), block_size - 1, outfile);
+        /*
+        j = fread(buffer, sizeof(uint8_t), block_size - 1, infile);
+        mpz_import(m, j, 1, sizeof(uint8_t), 1, 0, buffer);
+        ss_encrypt(c, m, n);
+        gmp_fprintf(outfile, "%Zx\n", c); */
+    }
+    free(buffer);
+    mpz_clears(k, m, c, NULL);
+   
 }
 
 
