@@ -9,3 +9,5 @@
 *.aux
 *.dat
 lists/
+*.txt
+tests/
