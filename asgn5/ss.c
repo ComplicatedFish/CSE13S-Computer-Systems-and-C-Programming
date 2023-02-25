@@ -7,6 +7,8 @@
 #include <stdlib.h>
 #include <assert.h>
 
+extern gmp_randstate_t state;
+
 void lcm(mpz_t rop, const mpz_t a, const mpz_t b){
     mpz_t num;  //holds numerator in LCM formula
     mpz_t den;  //denominator in LCM fomrula
@@ -82,15 +84,27 @@ void ss_read_priv(mpz_t pq, mpz_t d, FILE *pvfile){
     gmp_fscanf(pvfile, "%Qd\n%Qd\n", pq, d);
 }
 
-/*
-void ss_encrypt(mpz_t c, const mpz_t m, const mpz_t n);
 
-void ss_encrypt_file(FILE *infile, FILE *outfile, const mpz_t n);
+void ss_encrypt(mpz_t c, const mpz_t m, const mpz_t n){
+    pow_mod(c, m, n, n);
+}
 
-void ss_decrypt(mpz_t m, const mpz_t c, const mpz_t d, const mpz_t pq);
 
-void ss_decrypt_file(FILE *infile, FILE *outfile, const mpz_t d, const mpz_t pq);
-*/
+void ss_encrypt_file(FILE *infile, FILE *outfile, const mpz_t n){
+    mpz_t k; //holds size of block
+    mpz_inits(k, NULL);
+
+    
+}
+
+void ss_decrypt(mpz_t m, const mpz_t c, const mpz_t d, const mpz_t pq){
+    pow_mod(m, c, d, pw);
+}
+
+void ss_decrypt_file(FILE *infile, FILE *outfile, const mpz_t d, const mpz_t pq){
+
+}
+
 
 
 int main(void){
