@@ -107,6 +107,8 @@ int main (int argc, char **argv) {
 
     randstate_clear();
 
+    mpz_clears(p, q, n, pq, d, NULL);
+
     return 0;
 }
 

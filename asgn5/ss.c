@@ -13,9 +13,9 @@ void lcm(mpz_t rop, const mpz_t a, const mpz_t b){
     mpz_t num;  //holds numerator in LCM formula
     mpz_t den;  //denominator in LCM fomrula
     mpz_inits(num, den, NULL);
-    mpz_mul(num, a, b); //num = a * b. abs() uneeded as we are working with unsigned ints
-    gcd(den, a, b); //den = gcd(a, b)
-    mpz_fdiv_q(rop, num, den); //rop = num/den = (a*b)/gcd(a, b)
+    mpz_mul(num, a, b);         //num = a * b. abs() uneeded as we are working with unsigned ints
+    gcd(den, a, b);             //den = gcd(a, b)
+    mpz_fdiv_q(rop, num, den);  //rop = num/den = (a*b)/gcd(a, b)
     mpz_clears(num, den, NULL);
 
 }
@@ -32,7 +32,7 @@ void ss_make_pub(mpz_t p, mpz_t q, mpz_t n, uint64_t nbits, uint64_t iters){
     mpz_mul(n, p, p);   //n = p^2
     mpz_mul(n, n, q);   //n = n * q = p^2 * q
 
-    //the folowing tests wether the output satisfies requirements
+    //the folowing tests whether the output satisfies requirements
     mpz_t temp_p; //will hold p-1
     mpz_t temp_q; //will hold q-1
     mpz_inits(temp_p, temp_q, NULL);
@@ -77,11 +77,11 @@ void ss_write_priv(const mpz_t pq, const mpz_t d, FILE *pvfile){
 
 
 void ss_read_pub(mpz_t n, char username[], FILE *pbfile){
-    gmp_fscanf(pbfile, "%Zd\n%s\n", n, username);
+    gmp_fscanf(pbfile, "%Zx\n%s\n", n, username);
 }
 
 void ss_read_priv(mpz_t pq, mpz_t d, FILE *pvfile){
-    gmp_fscanf(pvfile, "%Zd\n%Zd\n", pq, d);
+    gmp_fscanf(pvfile, "%Zx\n%Zx\n", pq, d);
 }
 
 
@@ -183,7 +183,7 @@ int main(void){
     mpz_t pq;
     mpz_t f;
     mpz_inits(p, q, n, d, pq, f, NULL);
-    randstate_init(2);
+    randstate_init(0);
 
     ss_make_pub(p, q, n, 128, 40);
     gmp_printf("prime p = %Zd, prime q = %Zd, modulus n = %Zd\n", p, q, n);
