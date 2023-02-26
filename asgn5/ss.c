@@ -77,11 +77,11 @@ void ss_write_priv(const mpz_t pq, const mpz_t d, FILE *pvfile){
 
 
 void ss_read_pub(mpz_t n, char username[], FILE *pbfile){
-    gmp_fscanf(pbfile, "%Qd\n%s\n", n, username);
+    gmp_fscanf(pbfile, "%Zd\n%s\n", n, username);
 }
 
 void ss_read_priv(mpz_t pq, mpz_t d, FILE *pvfile){
-    gmp_fscanf(pvfile, "%Qd\n%Qd\n", pq, d);
+    gmp_fscanf(pvfile, "%Zd\n%Zd\n", pq, d);
 }
 
 
@@ -104,15 +104,26 @@ void ss_encrypt_file(FILE *infile, FILE *outfile, const mpz_t n){
     uint64_t block_size = mpz_get_ui(k);
 
     uint8_t *buffer = (uint8_t *) calloc(block_size, sizeof(uint8_t));
-    buffer[0] = 0xFF;
+    uint8_t *init;
+    init = buffer; //necessary to free buffer
+    //buffer[0] = 0xFF;
+    //buffer++;
     uint64_t j = 0; //will hold number of bytes read
     while (!feof(infile)){
-        j = fread(buffer, sizeof(uint8_t), block_size - 1, infile);
-        mpz_import(m, j, 1, sizeof(uint8_t), 1, 0, buffer);
+        *buffer = 0xff;
+        j = fread(buffer+1, sizeof(uint8_t), block_size - 1, infile);
+        //printf("%s\n", buffer);
+        //*buffer = 0xFF;
+        //printf("%lu\n", j);
+        //printf("%s\n", buffer);
+        //break;
+        //buffer--;
+        mpz_import(m, j+1, 1, sizeof(uint8_t), 1, 0, buffer);
         ss_encrypt(c, m, n);
         gmp_fprintf(outfile, "%Zx\n", c);
+        buffer = init;
     }
-    free(buffer);
+    free(init);
     mpz_clears(k, m, c, NULL);
 }
 
@@ -128,28 +139,38 @@ void ss_decrypt_file(FILE *infile, FILE *outfile, const mpz_t d, const mpz_t pq)
 
     //this is the calculation of block size, which will be stores in K
     mpz_set_ui(k, mpz_sizeinbase(pq, 2));    //k = log_2(pq)
-    mpz_fdiv_q_ui(k, k, 2);                    //k = k/2 = log_2(pq)/2
+    //mpz_fdiv_q_ui(k, k, 2);                    //k = k/2 = log_2(pq)/2
     mpz_sub_ui(k, k, 1);                    //k = k-1 = (1/2)log_2(pq)-1
     mpz_fdiv_q_ui(k, k, 8);                    //k = k/8 = [(1/2)log_2(pq)-1]/8
     uint64_t block_size = mpz_get_ui(k);
 
     uint8_t *buffer = (uint8_t *) calloc(block_size, sizeof(uint8_t));
+    uint8_t *init;
+    init = buffer;
     //buffer[0] = 0xFF;
     uint64_t j = 0; //will hold number of bytes converted
+    //buffer++;
     while (!feof(infile)){
-        gmp_fscanf(infile, "%Qd\n", c);
+        gmp_fscanf(infile, "%Zx\n", c);
+        //gmp_printf("%Zd\n", c);
+        //if (1){ break;}
         ss_decrypt(m, c, d, pq);
         mpz_export(buffer, &j, 1, sizeof(uint8_t), 1, 0, m);
-        fwrite(buffer, sizeof(uint8_t), block_size - 1, outfile);
+        //buffer++;
+        //printf("%lu\n", j);
+        //printf("%s\n", buffer);
+        fwrite(buffer+1, sizeof(uint8_t), j-1/*block_size - 1*/, outfile);
+        //buffer++;
+        //buffer--;
         /*
         j = fread(buffer, sizeof(uint8_t), block_size - 1, infile);
         mpz_import(m, j, 1, sizeof(uint8_t), 1, 0, buffer);
         ss_encrypt(c, m, n);
         gmp_fprintf(outfile, "%Zx\n", c); */
     }
-    free(buffer);
+    //buffer--;
+    free(init);
     mpz_clears(k, m, c, NULL);
-   
 }
 
 
@@ -162,7 +183,7 @@ int main(void){
     mpz_t pq;
     mpz_t f;
     mpz_inits(p, q, n, d, pq, f, NULL);
-    randstate_init(5);
+    randstate_init(2);
 
     ss_make_pub(p, q, n, 128, 40);
     gmp_printf("prime p = %Zd, prime q = %Zd, modulus n = %Zd\n", p, q, n);
@@ -172,9 +193,29 @@ int main(void){
 
     char *user = getenv("USER");
     printf("\n");
-    ss_write_pub(n, user, stdout);
+    FILE *pub = fopen("ss.pub", "w");
+    ss_write_pub(n, user, pub);
+    fclose(pub);
     printf("\n");
-    ss_write_priv(pq, d, stdout);
+    FILE *priv = fopen("ss.priv", "w");
+    ss_write_priv(pq, d, priv);
+    fclose(priv);
+
+    FILE *in = fopen("input.txt", "r");
+    FILE *out = fopen("enc_out.txt", "w");
+
+    ss_encrypt_file(in, out, n);
+
+    fclose(in);
+    fclose(out);
+
+    in = fopen("enc_out.txt", "r");
+    out = fopen("output.txt", "w");
+
+    ss_decrypt_file(in, out, d, pq);
+
+    fclose(in);
+    fclose(out);
 
     return 0;
 }

@@ -208,7 +208,7 @@ void make_prime(mpz_t p, uint64_t bits, uint64_t iters){ //(int *p, int bits, in
 }
 
 /*
-int main(void){
+int ma55555in(void){
     mpz_t g;
     mpz_t i;
     mpz_t out;
