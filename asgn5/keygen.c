@@ -36,7 +36,7 @@ int main (int argc, char **argv) {
     while ((opt = getopt(argc, argv, OPTIONS)) != -1) {
         switch (opt) {
             case 'b':
-                bits = strtoul(optarg, NULL, 10);
+                nbits = strtoul(optarg, NULL, 10);
                 break;
             case 'i':
                 iters = strtoul(optarg, NULL, 10);
@@ -64,6 +64,12 @@ int main (int argc, char **argv) {
         }
     }
 
+    if (pub == NULL || priv == NULL){
+        printf("ERROR! File did not open correctly!!\n");
+        print_help();
+        return 2;
+    }
+
     if (h){
         print_help();
         return 2;
@@ -71,7 +77,7 @@ int main (int argc, char **argv) {
 
     int pv_no = fileno(priv);
 
-    fchmod(pv_no, 0600);
+    fchmod(pv_no, 0600); //changes file permissions
 
     randstate_init(seed);
 
@@ -83,23 +89,24 @@ int main (int argc, char **argv) {
 
     mpz_inits(p, q, n, pq, d, NULL);
 
+    //key generation
     ss_make_pub(p, q, n, nbits, iters);
     ss_make_priv(d, pq, p, q);
 
     char *user = getenv("USER"); //username
 
+    //writes keys to files held by priv and pub
     ss_write_priv(pq, d, priv);
     ss_write_pub(n, user, pub);
 
     //format for this taken from verbose output of provided keygen binary
     if (v == 1) {
         fprintf(stdout, "user = %s\n", user);
-        gmp_printf("user signature (%lu bits): %Zd\n", mpz_sizeinbase(s, 2), s);
-        gmp_printf("p  (%lu bits) = %Zd\n", mpz_sizeinbase(prime_p, 2), p);
-        gmp_printf("q  (%lu bits) = %Zd\n", mpz_sizeinbase(prime_q, 2), q);
+        gmp_printf("p  (%lu bits) = %Zd\n", mpz_sizeinbase(p, 2), p);
+        gmp_printf("q  (%lu bits) = %Zd\n", mpz_sizeinbase(q, 2), q);
         gmp_printf("n  (%lu bits) = %Zd\n", mpz_sizeinbase(n, 2), n);
-        gmp_printf("pq (%lu bits) = %Zd\n", mpz_sizeinbase(pq, 2), pq);
-        gmp_printf("d  (%lu bits) = %Zd\n", mpz_sizeinbase(d, 2), d);
+        gmp_printf("d (%lu bits) = %Zd\n", mpz_sizeinbase(d, 2), d);
+        gmp_printf("pq  (%lu bits) = %Zd\n", mpz_sizeinbase(pq, 2), pq);
     }
 
     fclose(pub);

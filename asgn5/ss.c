@@ -174,8 +174,8 @@ void ss_decrypt_file(FILE *infile, FILE *outfile, const mpz_t d, const mpz_t pq)
 }
 
 
-
-int main(void){
+/*
+int ma5in(void){
     mpz_t p;
     mpz_t q;
     mpz_t n;
@@ -219,7 +219,7 @@ int main(void){
 
     return 0;
 }
-
+*/
 /*
     mpz_inits(g, i, out, n, a, b, NULL);
 

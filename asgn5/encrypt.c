@@ -65,11 +65,11 @@ int main (int argc, char **argv) {
 
     char user[256]; //maximum username size in linux
 
-    rsa_read_pub(n, user, pbkey);
+    ss_read_pub(n, user, pbkey);
 
     //verbose output here
     if (v) {
-        fprintf("user = %s\n", user);
+        printf("user = %s\n", user);
         gmp_printf("n (%lu bits) = %Zd\n", mpz_sizeinbase(n, 2), n);
     }
 

@@ -42,7 +42,7 @@ int main (int argc, char **argv) {
                 break;
             case 'n':
                 fclose(pvkey);
-                pbkey = fopen(optarg, "r");
+                pvkey = fopen(optarg, "r");
                 break;
             case 'v':
                 v = 1;
@@ -55,16 +55,23 @@ int main (int argc, char **argv) {
                 break;
         }
     }
+
+    if (pvkey == NULL || input == NULL || output = NULL){
+        printf("ERROR! Files did not open correctly!\n");
+        print_help();
+        return 2;
+    }
     if (h) {
         print_help();
         return 2;
     }
 
-    mpz_t pq; //private modulus
-    mpz_t d;
+    mpz_t pq;   //private modulus
+    mpz_t d;    //private exponent
     mpz_inits(pq, d, NULL);
 
-    rsa_read_priv(pq, d, pvkey);
+    //reads private key in from file pointed to by pvkey
+    ss_read_priv(pq, d, pvkey);
 
     //verbose output here
     if (v) {
