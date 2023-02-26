@@ -56,7 +56,7 @@ int main (int argc, char **argv) {
         }
     }
 
-    if (pvkey == NULL || input == NULL || output = NULL){
+    if (pvkey == NULL || input == NULL || output == NULL){
         printf("ERROR! Files did not open correctly!\n");
         print_help();
         return 2;
