@@ -34,7 +34,7 @@ README.md : this file, containing the readme
 
 #### Instructions
 
-Run "make clean && make all" to compile all necessary C files. \
+Run "make clean && make all" to compile all necessary C files.
 
 ## Keygen
 ```
@@ -64,3 +64,12 @@ are all the different options for the program:
         -v              Enables verbose output of statistics.
         -h              Prints help message (this message).
 ```
+
+#### NOTE FOR GRADERS
+
+I referenced my own code from last year to build my main() programs \
+including keygen.c, encrypt.c, and decrypt.c. I made many edits to \
+those files since we are using SS this year, not RSA. I did not \
+look at any other code from last year (in part because my code did \
+not work then). I am noting this here for integrity
+
