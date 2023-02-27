@@ -23,7 +23,7 @@ extern gmp_randstate_t state;
 
 void print_help(void);
 
-int main (int argc, char **argv) {
+int main(int argc, char **argv) {
     int opt = 0; //required for getopt()
     uint64_t iters = 50; //iterations needed for miller rabin
     uint64_t nbits = 1024; //specified number of bits for n
@@ -35,42 +35,30 @@ int main (int argc, char **argv) {
 
     while ((opt = getopt(argc, argv, OPTIONS)) != -1) {
         switch (opt) {
-            case 'b':
-                nbits = strtoul(optarg, NULL, 10);
-                break;
-            case 'i':
-                iters = strtoul(optarg, NULL, 10);
-                break;
-            case 'n':
-                fclose(pub);
-                pub = fopen(optarg, "w");
-                break;
-            case 'd':
-                fclose(priv);
-                priv = fopen(optarg, "w");
-                break;
-            case 's':
-                seed = strtoul(optarg, NULL, 10);
-                break;
-            case 'v':
-                v = 1;
-                break;
-            case 'h':
-                h = 1;
-                break;
-            default:
-                h = 1;
-                break;
+        case 'b': nbits = strtoul(optarg, NULL, 10); break;
+        case 'i': iters = strtoul(optarg, NULL, 10); break;
+        case 'n':
+            fclose(pub);
+            pub = fopen(optarg, "w");
+            break;
+        case 'd':
+            fclose(priv);
+            priv = fopen(optarg, "w");
+            break;
+        case 's': seed = strtoul(optarg, NULL, 10); break;
+        case 'v': v = 1; break;
+        case 'h': h = 1; break;
+        default: h = 1; break;
         }
     }
 
-    if (pub == NULL || priv == NULL){
+    if (pub == NULL || priv == NULL) {
         printf("ERROR! File did not open correctly!!\n");
         print_help();
         return 2;
     }
 
-    if (h){
+    if (h) {
         print_help();
         return 2;
     }
@@ -81,11 +69,11 @@ int main (int argc, char **argv) {
 
     randstate_init(seed);
 
-    mpz_t p;    //storage for prime 1
-    mpz_t q;    //storage for prime 2
-    mpz_t n;    //public modulo n
-    mpz_t pq;   //product of primes
-    mpz_t d;    //private key d
+    mpz_t p; //storage for prime 1
+    mpz_t q; //storage for prime 2
+    mpz_t n; //public modulo n
+    mpz_t pq; //product of primes
+    mpz_t d; //private key d
 
     mpz_inits(p, q, n, pq, d, NULL);
 
@@ -118,7 +106,6 @@ int main (int argc, char **argv) {
 
     return 0;
 }
-
 
 //helper function to print program help statement
 void print_help(void) {

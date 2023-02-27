@@ -23,36 +23,26 @@ extern gmp_randstate_t state;
 
 void print_help(void);
 
-int main (int argc, char **argv) {
+int main(int argc, char **argv) {
     FILE *input = stdin;
     FILE *output = stdout;
     FILE *pbkey = fopen("ss.pub", "r");
-    int v = 0;  //verbose output enabler
-    int h = 0;  //help messafe print check
+    int v = 0; //verbose output enabler
+    int h = 0; //help messafe print check
 
-    int opt = 0;//required for getopt
+    int opt = 0; //required for getopt
 
     while ((opt = getopt(argc, argv, OPTIONS)) != -1) {
-        switch(opt) {
-            case 'i':
-                input = fopen(optarg, "r");
-                break;
-            case 'o':
-                output = fopen(optarg, "w");
-                break;
-            case 'n':
-                fclose(pbkey);
-                pbkey = fopen(optarg, "r");
-                break;
-            case 'v':
-                v = 1;
-                break;
-            case 'h':
-                h = 1;
-                break;
-            default:
-                h = 1;
-                break;
+        switch (opt) {
+        case 'i': input = fopen(optarg, "r"); break;
+        case 'o': output = fopen(optarg, "w"); break;
+        case 'n':
+            fclose(pbkey);
+            pbkey = fopen(optarg, "r");
+            break;
+        case 'v': v = 1; break;
+        case 'h': h = 1; break;
+        default: h = 1; break;
         }
     }
     if (h) {
@@ -84,18 +74,17 @@ int main (int argc, char **argv) {
 
 //helper function to print program help statement
 void print_help(void) {
-    fprintf(stderr,
-        "SYNOPSIS\n"
-        "   Encrypts file using the Schmidt-Samao algorithm\n"
-        "\n"
-        "USAGE\n"
-        "   ./encrypt [i:o:n:vh]\n"
-        "\n"
-        "OPTIONS\n"
-        "   -i input        Specifies input file to encrypt.\n"
-        "   -o output       Specifies file to place encrypted contents into.\n"
-        "   -n pbfile       Specifies file to read public key from.\n"
-        "   -v              Enables verbose output of statistics.\n"
-        "   -h              Prints help message (this message).\n");
+    fprintf(stderr, "SYNOPSIS\n"
+                    "   Encrypts file using the Schmidt-Samao algorithm\n"
+                    "\n"
+                    "USAGE\n"
+                    "   ./encrypt [i:o:n:vh]\n"
+                    "\n"
+                    "OPTIONS\n"
+                    "   -i input        Specifies input file to encrypt.\n"
+                    "   -o output       Specifies file to place encrypted contents into.\n"
+                    "   -n pbfile       Specifies file to read public key from.\n"
+                    "   -v              Enables verbose output of statistics.\n"
+                    "   -h              Prints help message (this message).\n");
     return;
 }

@@ -23,40 +23,30 @@ extern gmp_randstate_t state;
 
 void print_help(void);
 
-int main (int argc, char **argv) {
+int main(int argc, char **argv) {
     FILE *input = stdin;
     FILE *output = stdout;
     FILE *pvkey = fopen("ss.priv", "r");
-    int v = 0;  //verbose output enabler
-    int h = 0;  //help messafe print check
+    int v = 0; //verbose output enabler
+    int h = 0; //help messafe print check
 
-    int opt = 0;//required for getopt
+    int opt = 0; //required for getopt
 
     while ((opt = getopt(argc, argv, OPTIONS)) != -1) {
-        switch(opt) {
-            case 'i':
-                input = fopen(optarg, "r");
-                break;
-            case 'o':
-                output = fopen(optarg, "w");
-                break;
-            case 'n':
-                fclose(pvkey);
-                pvkey = fopen(optarg, "r");
-                break;
-            case 'v':
-                v = 1;
-                break;
-            case 'h':
-                h = 1;
-                break;
-            default:
-                h = 1;
-                break;
+        switch (opt) {
+        case 'i': input = fopen(optarg, "r"); break;
+        case 'o': output = fopen(optarg, "w"); break;
+        case 'n':
+            fclose(pvkey);
+            pvkey = fopen(optarg, "r");
+            break;
+        case 'v': v = 1; break;
+        case 'h': h = 1; break;
+        default: h = 1; break;
         }
     }
 
-    if (pvkey == NULL || input == NULL || output == NULL){
+    if (pvkey == NULL || input == NULL || output == NULL) {
         printf("ERROR! Files did not open correctly!\n");
         print_help();
         return 2;
@@ -66,8 +56,8 @@ int main (int argc, char **argv) {
         return 2;
     }
 
-    mpz_t pq;   //private modulus
-    mpz_t d;    //private exponent
+    mpz_t pq; //private modulus
+    mpz_t d; //private exponent
     mpz_inits(pq, d, NULL);
 
     //reads private key in from file pointed to by pvkey
@@ -90,18 +80,17 @@ int main (int argc, char **argv) {
 
 //helper function to print program help statement
 void print_help(void) {
-    fprintf(stderr,
-        "SYNOPSIS\n"
-        "   decrypts file using the Schmidt-Samoa algorithm\n"
-        "\n"
-        "USAGE\n"
-        "   ./decrypt [i:o:n:vh]\n"
-        "\n"
-        "OPTIONS\n"
-        "   -i input        Specifies input file to decrypt.\n"
-        "   -o output       Specifies file to place decrypted contents into.\n"
-        "   -n pbfile       Specifies file to read private key from.\n"
-        "   -v              Enables verbose output of statistics.\n"
-        "   -h              Prints help message (this message).\n");
+    fprintf(stderr, "SYNOPSIS\n"
+                    "   decrypts file using the Schmidt-Samoa algorithm\n"
+                    "\n"
+                    "USAGE\n"
+                    "   ./decrypt [i:o:n:vh]\n"
+                    "\n"
+                    "OPTIONS\n"
+                    "   -i input        Specifies input file to decrypt.\n"
+                    "   -o output       Specifies file to place decrypted contents into.\n"
+                    "   -n pbfile       Specifies file to read private key from.\n"
+                    "   -v              Enables verbose output of statistics.\n"
+                    "   -h              Prints help message (this message).\n");
     return;
 }
