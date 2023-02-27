@@ -112,12 +112,12 @@ void ss_encrypt_file(FILE *infile, FILE *outfile, const mpz_t n) {
     init = buffer; //necessary to free buffer
     uint64_t j = 0; //will hold number of bytes read
     while (!feof(infile)) {
-        *buffer = 0xff;
+        buffer[0] = 0xff;
         j = fread(buffer + 1, sizeof(uint8_t), block_size - 1, infile);
         mpz_import(m, j + 1, 1, sizeof(uint8_t), 1, 0, buffer);
         ss_encrypt(c, m, n);
         gmp_fprintf(outfile, "%Zx\n", c);
-        buffer = init;
+        buffer = init; //resets buffer
     }
     free(init);
     mpz_clears(k, m, c, NULL);
