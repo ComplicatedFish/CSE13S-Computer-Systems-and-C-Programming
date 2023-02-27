@@ -130,7 +130,21 @@ void pow_mod(mpz_t o, const mpz_t a, const mpz_t d, const mpz_t n){   //int *o, 
 }
 
 //Miller-Rabin primality tester
-bool is_prime(mpz_t n, uint64_t iters){ //(int *n, int iters){
+bool is_prime(const mpz_t n, uint64_t iters){ //(int *n, int iters){
+
+    //integers lesser than 4 have to be handled as special
+    //cases because of how the mathmatics of this function
+    //work (e.g. subtraction is performed on n).
+    if (mpz_cmp_ui(n, 4) < 0){
+        //0 and 1 are not primes
+        //2 and 3 are primes
+        //thus we only need to check if n is less than 2
+        if (mpz_cmp_ui(n, 2) < 0){
+            return false;
+        } else {
+            return true;
+        }
+    }
     mpz_t r;
     mpz_t s;
     mpz_t a;
@@ -207,4 +221,14 @@ void make_prime(mpz_t p, uint64_t bits, uint64_t iters){ //(int *p, int bits, in
 
     }
 }
+/*
+int m55ain(void){
+    mpz_t p;
+    mpz_init(p);
+    randstate_init(0);
+    mpz_set_ui(p, 1);
+    printf(is_prime(p, 50) ? "true\n" : "false\n");
+    mpz_clear(p);
+    randstate_clear();
+}*/
 
