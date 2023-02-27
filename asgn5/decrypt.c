@@ -92,15 +92,15 @@ int main (int argc, char **argv) {
 void print_help(void) {
     fprintf(stderr,
         "SYNOPSIS\n"
-        "   Encrypts file using the Schmidt-Samao algorithm\n"
+        "   decrypts file using the Schmidt-Samoa algorithm\n"
         "\n"
         "USAGE\n"
-        "   ./encrypt [i:o:n:vh]\n"
+        "   ./decrypt [i:o:n:vh]\n"
         "\n"
         "OPTIONS\n"
-        "   -i input        Specifies input file to encrypt.\n"
-        "   -o output       Specifies file to place encrypted contents into.\n"
-        "   -n pbfile       Specifies file to read public key from.\n"
+        "   -i input        Specifies input file to decrypt.\n"
+        "   -o output       Specifies file to place decrypted contents into.\n"
+        "   -n pbfile       Specifies file to read private key from.\n"
         "   -v              Enables verbose output of statistics.\n"
         "   -h              Prints help message (this message).\n");
     return;
