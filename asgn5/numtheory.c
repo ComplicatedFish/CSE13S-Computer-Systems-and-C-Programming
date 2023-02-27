@@ -6,7 +6,6 @@
 #include <math.h>
 #include <stdlib.h>
 
-//#define uint uint32_t
 
 extern gmp_randstate_t state;
 
@@ -212,23 +211,13 @@ void make_prime(mpz_t p, uint64_t bits, uint64_t iters){ //(int *p, int bits, in
     //for rare cases where the first generated number is a prime
     mpz_urandomb(p, state, bits);
     mpz_setbit(p, 0);
-    mpz_setbit(p, bits-1);
+    mpz_setbit(p, bits);
 
     while (is_prime(p, iters) != true){
         mpz_urandomb(p, state, bits);
         mpz_setbit(p, 0); //sets bit index 0 (first bit) which ensures p is not even
-        mpz_setbit(p, bits-1); //sets bit at index "bits" to 1 to ensure p is at least "bits" long
+        mpz_setbit(p, bits); //sets bit at index "bits" to 1 to ensure p is at least "bits" long
 
     }
 }
-/*
-int m55ain(void){
-    mpz_t p;
-    mpz_init(p);
-    randstate_init(0);
-    mpz_set_ui(p, 1);
-    printf(is_prime(p, 50) ? "true\n" : "false\n");
-    mpz_clear(p);
-    randstate_clear();
-}*/
 
