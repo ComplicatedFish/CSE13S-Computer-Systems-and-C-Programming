@@ -37,13 +37,30 @@ README.md : this file, containing the readme
 Run "make clean && make all" to compile all necessary C files. \
 
 ## Keygen
-run program with "./keygen [-b:i:n:d:s:vh]". Within the brackets \
-are all the different options for the program: \
-   -b nbits         Specifies minimum number of bits required for public modulus n. \
-   -i iters         Specifies number of iterations to check primality of a number with Miller-Rabin. \
-   -n pbfile        Specifies file to write public key to. \
-   -i pvfile        Specifies file to write private key to. \
-   -s seed          Specifies seed for global random state. \
-   -v               Enables verbose output of statistics and data pertaining to program \
-   -h               Enables printing the help message
+```
+run program with "./keygen [-b:i:n:d:s:vh]". Within the brackets
+are all the different options for the program:
+        -b nbits         Specifies minimum number of bits required for public modulus n.
+        -i iters         Specifies number of iterations to check primality of a number with Miller-Rabin.
+        -n pbfile        Specifies file to write public key to.
+        -i pvfile        Specifies file to write private key to.
+        -s seed          Specifies seed for global random state.
+        -v               Enables verbose output of statistics and data pertaining to program
+        -h               Enables printing the help message
 
+run program with "./encrypt [-i:o:n:vh]". Within the brackets
+are all the different options for the program:
+        -i input        Specifies input file to encrypt.
+        -o output       Specifies file to place encrypted contents into.
+        -n pbfile       Specifies file to read public key from.
+        -v              Enables verbose output of statistics.
+        -h              Prints help message (this message).
+
+run program with "./decrypt [-i:o:n:vh]". Within the brackets
+are all the different options for the program:
+        -i input        Specifies input file to encrypt.
+        -o output       Specifies file to place encrypted contents into.
+        -n pvfile       Specifies file to read private key from.
+        -v              Enables verbose output of statistics.
+        -h              Prints help message (this message).
+```
