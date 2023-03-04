@@ -20,6 +20,7 @@ TrieNode *trie_node_create(uint16_t index){
 void trie_node_delete(TrieNode *n){
     free(n);
     n = NULL;
+    printf("free called\n");
 }
 
 //creates a root node for the trie data structure
@@ -32,14 +33,33 @@ TrieNode *trie_create(void){
     }
 }
 
-/*
+//from the root, checks if each child is null
+//if not, then calls trie_delete on them, which
+//kills the entire subtree held by that child
 void trie_reset(TrieNode *root){
-    
+    for (int i = 0; i < ALPHABET; i++){
+        if (root->children[i] == NULL){
+            continue;
+        } else {
+            trie_delete(root->children[i]);
+        }
+    }
 }
 
+//deletes each child of a trienode and then
+//itself. Works recursively
+void trie_delete(TrieNode *n){
+    for (int i = 0; i < ALPHABET; i++){
+        if (n->children[i] == NULL){
+            continue;
+        } else {
+            trie_delete(n->children[i]);
+        }
+    }
+    trie_node_delete(n);
+    n = NULL;
+}
 
-void trie_delete(TrieNode *n);
-*/
 TrieNode *trie_step(TrieNode *n, uint8_t sym){
     for (int i = 0; i < ALPHABET; i++){
         if (n->children[i]->code == sym){
@@ -50,9 +70,27 @@ TrieNode *trie_step(TrieNode *n, uint8_t sym){
 }
 
 int main (void){
-    TrieNode *A = trie_node_create(16);
-    TrieNode *B = trie_create();
-    trie_node_delete(A);
-    trie_node_delete(B);
+    TrieNode *a = trie_node_create(16);
+    TrieNode *b = trie_create();
+    b->children[10] = a;
+
+    for (int i = 0; i < 15; i++){
+        if (b->children[i] == NULL){
+            printf("%d NULL\n", i);
+        } else {
+            printf("%d %u\n", i, b->children[i]->code);
+        }
+    }
+    trie_reset(b);
+    for (int i = 0; i < 15; i++){
+        if (b->children[i] == NULL){
+            printf("%d NULL\n", i);
+        } else {
+            printf("before print\n");
+            printf("%d %u\n", i, b->children[i]->code);
+        }
+    }
+
+    //trie_delete(b);
     return 0;
 }
