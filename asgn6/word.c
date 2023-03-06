@@ -77,10 +77,22 @@ void wt_delete(WordTable *wt){
 }
 
 int main (void){
-    uint8_t *syms = (uint8_t *) calloc(14, sizeof(uint8_t));
-    strcpy(syms, (uint8_t*)"Hello World!");
-    Word *a = word_create(syms, 13);
-    word_delete(a);
+    //uint8_t *syms = (uint8_t *) calloc(14, sizeof(uint8_t));
+    //strcpy(syms, "Hello World!");
+    uint8_t *syms = (uint8_t *) "Hello World!";
+    //Word *a = word_create(syms, 13);
+    //word_delete(a);
+
+    WordTable *b = wt_create();
+    b[5] = word_create(syms, 13);
+
+    //test word_create today
+    //be well
+    //attach word structs to the wt
+    //finish testing, update doc
+    //then io.c
+    //fast fats fast
+
     /*
     TrieNode *a = trie_node_create(16);
     TrieNode *b = trie_create();
