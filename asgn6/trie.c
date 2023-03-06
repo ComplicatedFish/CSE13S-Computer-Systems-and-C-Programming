@@ -71,7 +71,7 @@ TrieNode *trie_step(TrieNode *n, uint8_t sym){
     }
     return NULL;
 }
-
+/*
 int main (void){
     TrieNode *a = trie_node_create(16);
     TrieNode *b = trie_create();
@@ -96,4 +96,5 @@ int main (void){
 
     trie_delete(b);
     return 0;
-}
+}*/
+
