@@ -63,6 +63,7 @@ void trie_delete(TrieNode *n){
     //n = NULL;
 }
 
+//returns next
 TrieNode *trie_step(TrieNode *n, uint8_t sym){
     for (int i = 0; i < ALPHABET; i++){
         if (n->children[i]->code == sym){
