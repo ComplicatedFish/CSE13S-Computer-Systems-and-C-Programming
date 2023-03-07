@@ -38,7 +38,7 @@ Word *word_append_sym(Word *w, uint8_t sym){
     new_word->syms[w->len] = sym;
     new_word->syms[w->len + 1] = '\0';
     new_word->len = w->len + 1;
-    free(w); //frees w before returning new_word
+    //free(w); //frees w before returning new_word
     return new_word;
 }
 
@@ -59,7 +59,7 @@ WordTable *wt_create(void){
 }
 
 void wt_reset(WordTable *wt){
-    for (int i = 1; i < MAX_CODE; i++){
+    for (int i = 2; i < MAX_CODE; i++){
         if (wt[i] != NULL){
             word_delete(wt[i]);
             wt[i] = NULL;
@@ -77,7 +77,7 @@ void wt_delete(WordTable *wt){
     free(wt);
     wt = NULL;
 }
-
+/*
 int main (void){
     //uint8_t *syms = (uint8_t *) calloc(14, sizeof(uint8_t));
     //strcpy(syms, "Hello World!");
@@ -96,13 +96,14 @@ int main (void){
         }
     }
     assert (b[1] != NULL);
-    b[5] = word_append_sym(b[5], (uint8_t)'w');
-    printf("%s\n", b[5]->syms);
+    b[6] = word_append_sym(b[5], (uint8_t)'w');
+    printf("%s\n", b[6]->syms);
 
     wt_reset(b);
     wt_delete(b);
 
-    /*
+}*/
+/*
     TrieNode *a = trie_node_create(16);
     TrieNode *b = trie_create();
     b->children[10] = a;
@@ -127,4 +128,4 @@ int main (void){
     trie_delete(b);
     return 0;
     */
-}
+

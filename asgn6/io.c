@@ -6,6 +6,7 @@
 #include "word.h"
 #include <string.h>
 #include <assert.h>
+#include "io.h"
 
 //extern uint64_t total_syms; // To count the symbols processed.
 //extern uint64_t total_bits; // To count the bits processed.

@@ -41,7 +41,7 @@ void trie_reset(TrieNode *root){
         if (root->children[i] == NULL){
             continue;
         } else {
-            printf("at index %d trie_delete\n", i);
+            //printf("at index %d trie_delete\n", i);
             trie_delete(root->children[i]);
             root->children[i] = NULL;
         }
@@ -63,17 +63,21 @@ void trie_delete(TrieNode *n){
     //n = NULL;
 }
 
-//returns next
+//immediate child node containing character
+//held by sym. In C, all cahracters hold a value
+//so sym arr[sym] will return the sym index of
+//array "arr"
 TrieNode *trie_step(TrieNode *n, uint8_t sym){
-    for (int i = 0; i < ALPHABET; i++){
+    return n->children[sym];
+    /*for (int i = 0; i < ALPHABET; i++){
         if (n->children[i]->code == sym){
             return n->children[i];
         }
     }
-    return NULL;
+    return NULL;*/
 }
 /*
-int main (void){
+int m5ain (void){
     TrieNode *a = trie_node_create(16);
     TrieNode *b = trie_create();
     b->children[10] = a;
