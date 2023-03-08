@@ -11,15 +11,14 @@
 
 //MAGIC and BLOCK are defined
 
-extern uint64_t total_syms; // To count the symbols processed.
-extern uint64_t total_bits; // To count the bits processed.
+//extern uint64_t total_syms; // To count the symbols processed.
+//extern uint64_t total_bits; // To count the bits processed.
 
 extern uint8_t *buffer;
 //typedef struct FileHeader {
 //  uint32_t magic;
 //  uint16_t protection;
 //} FileHeader;
-
 
 //this functions and the following function write_bytes() read and write
 //bytes from and to a file. They use the functions read and write, both of
@@ -69,15 +68,20 @@ void write_header(int outfile, FileHeader *header){
 }
 
 bool read_sym(int infile, uint8_t *sym){
-    static int byte_index;
-    while (byte_index < BLOCK);
     int r;
-    r = read_bytes(infile, sym, 1);
-    if (r == 0){ //if no bytes read, returns false
-        return false;
+    static int byte_index;
+    byte_index = byte_index % BLOCK; //resets index to 0 once 4096 hit
+    if (byte_index == 0){ //if index 0, then new buffer required to read
+        r = read_bytes(infile, buffer, BLOCK);
+        if (r == 0){ //only executes if r = 0 AND there were no previous reads
+            return false; //returns false if no more symbols to be read
+        }
     }
-    total_syms++;
-    return true;
+    *sym = buffer[byte_index];
+    //deal with the fact that r will not always go up to 4096
+    //you may need to declare r as static var, and then compare
+
+
 }
 
 void write_pair(int outfile, uint16_t code, uint8_t sym, int bitlen){
@@ -100,4 +104,8 @@ void flush_words(int outfile){
 
 }
 
+int main (void){
+
+    return 0;
+}
 
