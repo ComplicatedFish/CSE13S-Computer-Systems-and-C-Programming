@@ -8,8 +8,8 @@
 #include <assert.h>
 #include "io.h"
 #include "endian.h"
-#include "unistd.h"
-#include <fcnt1.h>
+#include <fcntl.h>
+#include <unistd.h>
 
 //MAGIC and BLOCK are defined
 
@@ -17,7 +17,7 @@
 //extern uint64_t total_bits; // To count the bits processed.
 
 /*extern*/ uint8_t *read_buffer;
-/*extern*/ uint8_t *write_buffer;
+///*extern*/ uint8_t *write_buffer;
 
 //typedef struct FileHeader {
 //  uint32_t magic;
@@ -55,10 +55,11 @@ int write_bytes(int outfile, uint8_t *buf, int to_write){
             break;
         }
     }
+    return sum;
 }
 
 void read_header(int infile, FileHeader *header){
-    read_bytes(infile, header, sizeof(FileHeader));
+    read_bytes(infile, (uint8_t *)header, sizeof(FileHeader));
     if (big_endian()){
         header->magic = swap32(header->magic);
         header->protection = swap16(header->protection);
@@ -70,7 +71,7 @@ void write_header(int outfile, FileHeader *header){
         header->magic = swap32(header->magic);
         header->protection = swap16(header->protection);
     }
-    write_bytes(outfile, header, sizeof(FileHeader));
+    write_bytes(outfile, (uint8_t *)header, sizeof(FileHeader));
 }
 
 bool read_sym(int infile, uint8_t *sym){
@@ -84,7 +85,7 @@ bool read_sym(int infile, uint8_t *sym){
         }
     }
     if (r > 0){
-        *sym = buffer[byte_index];
+        *sym = read_buffer[byte_index];
         return true;
     } else {
         return false;
@@ -115,8 +116,10 @@ void flush_words(int outfile){
 int main (void){
     int fd = open("input.txt", O_RDONLY | O_CREAT);
     uint8_t *buffer = (uint8_t *) calloc(1000, sizeof(uint8_t));
-    read_bytes(fd, buffer, 1000);
-    write_bytes(stdout, buffer, 1000);
+    read_bytes(0, buffer, 1000);
+    write_bytes(1, buffer, 1000);
+    close(fd);
+    free(buffer);
     return 0;
 }
 
