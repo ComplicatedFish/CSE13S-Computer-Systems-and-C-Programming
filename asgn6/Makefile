@@ -12,11 +12,11 @@ all: $(TARGET)
 #$(TARGET): $(OBJS)
 #	$(CC) $(CFLAGS) $(OBJS) -o $(TARGET) `pkg-config --cflags --libs gmp`
 
-encode: $(KEYGEN_OBJS)
-	$(CC) -o encode $(KEYGEN_OBJS)
+encode: $(ENCODE_OBJS)
+	$(CC) -o encode $(ENCODE_OBJS)
 
-decode: $(ENCRYPT_OBJS)
-	$(CC) -o encode $(ENCRYPT_OBJS)
+decode: $(DECODE_OBJS)
+	$(CC) -o decode $(DECODE_OBJS)
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $<
