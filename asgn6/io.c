@@ -14,7 +14,7 @@
 //MAGIC and BLOCK are defined
 
 //extern uint64_t total_syms; // To count the symbols processed.
-//extern uint64_t total_bits; // To count the bits processed.
+extern uint64_t total_bits; // To count the bits processed.
 
 /*extern*/ uint8_t *read_buffer;
 ///*extern*/ uint8_t *write_buffer;
@@ -92,7 +92,7 @@ bool read_sym(int infile, uint8_t *sym){
     }
 
 }
-/*
+
 void write_pair(int outfile, uint16_t code, uint8_t sym, int bitlen){
     
 }
@@ -112,11 +112,11 @@ void write_word(int outfile, Word *w){
 void flush_words(int outfile){
 
 }
-*/
+
 int main (void){
     int fd = open("input.txt", O_RDONLY | O_CREAT);
     uint8_t *buffer = (uint8_t *) calloc(1000, sizeof(uint8_t));
-    read_bytes(0, buffer, 1000);
+    read_bytes(fd, buffer, 1000);
     write_bytes(1, buffer, 1000);
     close(fd);
     free(buffer);
