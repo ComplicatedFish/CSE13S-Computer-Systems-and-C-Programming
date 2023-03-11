@@ -17,7 +17,7 @@
 extern uint64_t total_bits; // To count the bits processed.
 
 /*extern*/ uint8_t *read_buffer;
-///*extern*/ uint8_t *write_buffer;
+/*extern*/ uint8_t *write_buffer;
 
 //typedef struct FileHeader {
 //  uint32_t magic;
@@ -94,11 +94,41 @@ bool read_sym(int infile, uint8_t *sym){
 }
 
 void write_pair(int outfile, uint16_t code, uint8_t sym, int bitlen){
-    
+    //remember sets.c from asgn 3
+    static int bit_index;
+    int byte_index = bit_index/8;
+    if (byte_index == BLOCK){ //buffer full!
+        flush_pairs(outfile);
+        byte_index = 0;
+        bit_index = 0;
+    }
+    for (int i = 0; i < bitlen; i++){
+        write_buffer[byte_index] = write_buffer[byte_index] | (code & (1 << (bit_index % 8)));
+        bit_index++;
+        byte_index = bit_index/8;
+        if (byte_index == BLOCK){ //buffer full!
+            flush_pairs(outfile);
+            byte_index = 0;
+            bit_index = 0;
+        }
+    }
+    for (int i = 0; i < 8; i++){
+        write_buffer[byte_index] = write_buffer[byte_index] | (sym & (1 << (bit_index % 8)));
+        bit_index++;
+        byte_index = bit_index/8;
+        if (byte_index == BLOCK){ //buffer full!
+            flush_pairs(outfile);
+            byte_index = 0;
+            bit_index = 0;
+        }
+    }
 }
 
-void flush_pairs(int outfile){
 
+
+
+void flush_pairs(int outfile){
+    write_bytes(outfile, write_buffer, BLOCK);
 }
 
 bool read_pair(int infile, uint16_t *code, uint8_t *sym, int bitlen){
@@ -116,10 +146,15 @@ void flush_words(int outfile){
 int main (void){
     int fd = open("input.txt", O_RDONLY | O_CREAT);
     uint8_t *buffer = (uint8_t *) calloc(1000, sizeof(uint8_t));
+
+    read_buffer = (uint8_t *) calloc(BLOCK, sizeof(uint8_t));
+    write_buffer = (uint8_t *) calloc(BLOCK, sizeof(uint8_t));
+
     read_bytes(fd, buffer, 1000);
     write_bytes(1, buffer, 1000);
     close(fd);
     free(buffer);
+    free(read_buffer); free(write_buffer);
     return 0;
 }
 
