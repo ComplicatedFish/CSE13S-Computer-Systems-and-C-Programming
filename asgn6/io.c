@@ -74,18 +74,21 @@ void write_header(int outfile, FileHeader *header){
     write_bytes(outfile, (uint8_t *)header, sizeof(FileHeader));
 }
 
+//read's symbol into buffer, and the reads from buffer into *sym
+//uses static buffer
 bool read_sym(int infile, uint8_t *sym){
     static int r; //holds the value returned by read_bytes()
     static int byte_index;
+    static uint8_t buffer[BLOCK];
     byte_index = byte_index % BLOCK; //resets index to 0 once 4096 hit
     if (byte_index == 0){ //if index 0, then new buffer required to read
-        r = read_bytes(infile, read_buffer, BLOCK);
+        r = read_bytes(infile, buffer, BLOCK);
         if (r == 0){ //only executes if r = 0 AND there were no previous reads
             return false; //returns false if no more symbols to be read
         }
     }
     if (r > 0){
-        *sym = read_buffer[byte_index];
+        *sym = buffer[byte_index];
         return true;
     } else {
         return false;
@@ -93,6 +96,8 @@ bool read_sym(int infile, uint8_t *sym){
 
 }
 
+//writes pairs of bitlen bits of code and the accompanying symbol
+//uses global buffer write_buffer
 void write_pair(int outfile, uint16_t code, uint8_t sym, int bitlen){
     //remember sets.c from asgn 3
     static int bit_index;
@@ -125,8 +130,9 @@ void write_pair(int outfile, uint16_t code, uint8_t sym, int bitlen){
 }
 
 
-
-
+//flushes write_pair()'s buffer
+//writing everythign stored within
+//the global buffer write_buffer
 void flush_pairs(int outfile){
     write_bytes(outfile, write_buffer, BLOCK);
 }
@@ -154,7 +160,7 @@ int main (void){
     write_bytes(1, buffer, 1000);
     close(fd);
     free(buffer);
-    free(read_buffer); free(write_buffer);
+    free(buffer); free(write_buffer);
     return 0;
 }
 
