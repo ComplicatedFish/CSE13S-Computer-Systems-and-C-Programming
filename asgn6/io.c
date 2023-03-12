@@ -153,7 +153,7 @@ bool read_pair(int infile, uint16_t *code, uint8_t *sym, int bitlen){
     }
     if (bit_index == 0){ //buffer empty, needs to be filled
         r = read_bytes(infile, read_buffer, BLOCK);
-        r++;//just to disable warning
+        if (r){r++;} //disables warning, CHANGE LATER
     }
     for (int i = 0; i < bitlen; i++){
         *code = *code | (read_buffer[byte_index] & (1 << (bit_index % 8)));

@@ -4,8 +4,8 @@ CFLAGS = -Wall -Wpedantic -Werror -Wextra
 TARGET = encode decode
 SOURCE = $(wildcard *.c)
 OBJS = $(patsubst %.c, %.o, $(SOURCE))
-ENCODE_OBJS = trie.o word.o io.o endian.o
-DECODE_OBJS = trie.o word.o io.o endian.o
+ENCODE_OBJS = trie.o word.o io.o encode.o
+DECODE_OBJS = trie.o word.o io.o decode.o
 
 all: $(TARGET)
 
