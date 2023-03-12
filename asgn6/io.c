@@ -16,8 +16,9 @@
 //extern uint64_t total_syms; // To count the symbols processed.
 extern uint64_t total_bits; // To count the bits processed.
 
-/*extern*/ uint8_t *read_buffer;
-/*extern*/ uint8_t *write_buffer;
+/*extern*/ uint8_t read_buffer[BLOCK]; //buffer for read_pair
+/*extern*/ uint8_t write_buffer[BLOCK]; //buffer for write_pair
+/*extern*/ uint8_t word_buffer[BLOCK]; //buffer for write_word
 
 //typedef struct FileHeader {
 //  uint32_t magic;
@@ -138,11 +139,42 @@ void flush_pairs(int outfile){
 }
 
 bool read_pair(int infile, uint16_t *code, uint8_t *sym, int bitlen){
-
+    static int bit_index;
+    int byte_index = bit_index/8;
+    int r; //holds result of read_bytes
+    if (byte_index == BLOCK){
+        bit_index = 0;
+        byte_index = 0;
+    }
+    if (bit_index == 0){ //buffer empty, needs to be filled
+        r = read_bytes(infile, read_buffer, BLOCK);
+        if (r == 0){
+            return false;
+        } 
+    }
+    for (int i = 0; i < bitlen; i++){
+        *code = *code | (read_buffer[byte_index] & (1 << (bit_index % 8)));
+        bit_index++;
+        byte_index = bit_index/8;
+        //read_buffer[byte_index] = read_buffer[byte_index] | (code & (1 << (bit_index % 8)));
+        if (*code == STOP_CODE){
+            return false;
+        }
+    }
+    for (int i = 0; i < 8; i++){
+        *sym = *sym | (read_buffer[byte_index] & (1 << (bit_index % 8)));
+        bit_index++;
+        byte_index = bit_index/8;
+    }
+    return true;
 }
 
+ 
 void write_word(int outfile, Word *w){
-
+    static int byte_index;
+    for (int i = 0; i < w->len; i++){
+        word_buffer[byte_index] = w->syms[i];
+    }
 }
 
 void flush_words(int outfile){
@@ -153,14 +185,14 @@ int main (void){
     int fd = open("input.txt", O_RDONLY | O_CREAT);
     uint8_t *buffer = (uint8_t *) calloc(1000, sizeof(uint8_t));
 
-    read_buffer = (uint8_t *) calloc(BLOCK, sizeof(uint8_t));
-    write_buffer = (uint8_t *) calloc(BLOCK, sizeof(uint8_t));
+    //read_buffer = (uint8_t *) calloc(BLOCK, sizeof(uint8_t));
+    //write_buffer = (uint8_t *) calloc(BLOCK, sizeof(uint8_t));
 
     read_bytes(fd, buffer, 1000);
     write_bytes(1, buffer, 1000);
     close(fd);
     free(buffer);
-    free(buffer); free(write_buffer);
+    free(read_buffer); free(write_buffer);
     return 0;
 }
 
