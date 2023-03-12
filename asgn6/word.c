@@ -30,19 +30,23 @@ Word *word_create(uint8_t *syms, uint32_t len){
 
 Word *word_append_sym(Word *w, uint8_t sym){
     uint8_t *new_syms = (uint8_t *) calloc(w->len + 2, sizeof(uint8_t));
-    Word *new_word = (Word *) calloc(1, sizeof(Word));
-    new_word->syms = new_syms;
+    //Word *new_word = (Word *) calloc(1, sizeof(Word));
+    Word *new_word = word_create(new_syms, w->len + 2);
+    //new_word->syms = new_syms;
     for (uint32_t i = 0; i < w->len; i++){
         new_word->syms[i] = w->syms[i];
     }
     new_word->syms[w->len] = sym;
-    new_word->syms[w->len + 1] = '\0';
-    new_word->len = w->len + 1;
-    //free(w); //frees w before returning new_word
+    new_word->syms[w->len + 1] = (uint8_t) '\0';
+    //new_word->len = w->len + 2;
     return new_word;
 }
 
 void word_delete(Word *w){
+    if (w->len != 0){
+        free(w->syms);
+        w->syms = NULL;
+    }
     free(w);
     w = NULL;
 }
@@ -51,7 +55,7 @@ WordTable *wt_create(void){
     WordTable *wt = (WordTable *) calloc(MAX_CODE, sizeof(WordTable));
     uint8_t *syms = NULL;
     wt[EMPTY_CODE] = word_create(syms, 0);
-    for (int i = 2; i < MAX_CODE; i++){
+    for (int i = START_CODE; i < MAX_CODE; i++){
         wt[i] = NULL;
     }
     return wt;

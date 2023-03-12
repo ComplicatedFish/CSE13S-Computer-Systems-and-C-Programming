@@ -88,6 +88,7 @@ int main(int argc, char **argv) {
             next_code = START_CODE;
         }
         prev_sym = curr_sym;
+        printf("\n%u\n", next_code);
     }
     if (curr_node != root){
         write_pair(outfile, prev_node->code, prev_sym, bit_len(next_code));
@@ -102,6 +103,10 @@ int main(int argc, char **argv) {
         
     }
 
+    fchmod(outfile, 0600/*file_info.st_mode*/);
+
+    close(infile);
+    close(outfile);
     trie_delete(root);
     free(header);
     return 0;
