@@ -13,8 +13,8 @@
 
 //MAGIC and BLOCK are defined
 
-//extern uint64_t total_syms; // To count the symbols processed.
-extern uint64_t total_bits; // To count the bits processed.
+uint64_t total_syms; // To count the symbols processed. used for flush_words
+uint64_t total_bits; // To count the bits processed.
 
 /*extern*/ uint8_t read_buffer[BLOCK]; //buffer for read_pair
 /*extern*/ uint8_t write_buffer[BLOCK]; //buffer for write_pair
@@ -55,6 +55,7 @@ int write_bytes(int outfile, uint8_t *buf, int to_write){
     while (sum < to_write){
         w = write(outfile, buf, to_write - sum);
         sum += w;
+        printf("to write: %d, w: %d, sum: %d\n", to_write, w, sum);
         if (!w){
             break;
         }
@@ -93,8 +94,9 @@ bool read_sym(int infile, uint8_t *sym){
             return false; //returns false if no more symbols to be read
         }
     }
-    if (r > 0){
+    if (byte_index < r){
         *sym = buffer[byte_index];
+        byte_index++;
         return true;
     } else {
         return false;
@@ -108,31 +110,36 @@ void write_pair(int outfile, uint16_t code, uint8_t sym, int bitlen){
     //remember sets.c from asgn 3
     static int bit_index;
     int byte_index = bit_index/8;
-    if (byte_index == BLOCK){ //buffer full!
-        flush_pairs(outfile);
+    if(byte_index == BLOCK){ //buffer full!
         byte_index = 0;
         bit_index = 0;
+        total_bits = BLOCK * 8;
+        flush_pairs(outfile);
     }
     for (int i = 0; i < bitlen; i++){
         write_buffer[byte_index] = write_buffer[byte_index] | (code & (1 << (bit_index % 8)));
         bit_index++;
         byte_index = bit_index/8;
-        if (byte_index == BLOCK){ //buffer full!
-            flush_pairs(outfile);
-            byte_index = 0;
+        if(byte_index == BLOCK){ //buffer full!
             bit_index = 0;
+            byte_index = 0;
+            total_bits = BLOCK * 8;
+            flush_pairs(outfile);
         }
     }
     for (int i = 0; i < 8; i++){
         write_buffer[byte_index] = write_buffer[byte_index] | (sym & (1 << (bit_index % 8)));
         bit_index++;
         byte_index = bit_index/8;
-        if (byte_index == BLOCK){ //buffer full!
-            flush_pairs(outfile);
-            byte_index = 0;
+        if(byte_index == BLOCK){ //buffer full!
             bit_index = 0;
+            byte_index = 0;
+            total_bits = BLOCK * 8;
+            flush_pairs(outfile);
         }
     }
+    total_bits = bit_index;
+    
 }
 
 
@@ -140,12 +147,18 @@ void write_pair(int outfile, uint16_t code, uint8_t sym, int bitlen){
 //writing everythign stored within
 //the global buffer write_buffer
 void flush_pairs(int outfile){
-    write_bytes(outfile, write_buffer, BLOCK);
+    /*
+    if (total_bits == 0){
+        write_bytes(outfile, write_buffer, BLOCK);
+    } else {
+    */
+    printf("total_bits = %lu\n", total_bits);
+    write_bytes(outfile, write_buffer, (total_bits + 8 - 1)/8); //ceiling division of total_bits/8
 }
 
 //This function read's pair from infile into the global buffer read_buffer
 //once the buffer is filled, pairs are gathered from the buffer into
-//*code and *sym
+// *code and *sym
 bool read_pair(int infile, uint16_t *code, uint8_t *sym, int bitlen){
     static int bit_index;
     int byte_index = bit_index/8;
@@ -199,6 +212,7 @@ void write_word(int outfile, Word *w){
     for (uint32_t i = 0; i < w->len; i++){
         word_buffer[byte_index] = w->syms[i];
         byte_index++;
+        total_syms++;
         if (byte_index == BLOCK){
             flush_words(outfile);
             byte_index = 0;
@@ -208,7 +222,11 @@ void write_word(int outfile, Word *w){
 
 //writes out symbols in word_buffer left
 void flush_words(int outfile){
-    write_bytes(outfile, word_buffer, BLOCK);
+    if(total_syms%BLOCK == 0){
+        write_bytes(outfile, word_buffer, BLOCK);
+    } else {
+        write_bytes(outfile, word_buffer, total_syms);
+    }
 }
 
 //main used for testing

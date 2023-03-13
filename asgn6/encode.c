@@ -88,7 +88,7 @@ int main(int argc, char **argv) {
             next_code = START_CODE;
         }
         prev_sym = curr_sym;
-        printf("\n%u\n", next_code);
+        //printf("\n%u\n", next_code);
     }
     if (curr_node != root){
         write_pair(outfile, prev_node->code, prev_sym, bit_len(next_code));
