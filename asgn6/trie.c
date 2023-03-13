@@ -7,26 +7,26 @@
 //TrieNode struct constructor. Initializes a uint16_t variable
 //and an array or pointers to other TrieNode structs. All pointers
 //are initialized as NULL
-TrieNode *trie_node_create(uint16_t index){
+TrieNode *trie_node_create(uint16_t index) {
     TrieNode *node = (TrieNode *) calloc(1, sizeof(TrieNode));
     node->code = index;
-    for (int i = 0; i < ALPHABET; i++){
+    for (int i = 0; i < ALPHABET; i++) {
         node->children[i] = NULL;
     }
     return node;
 }
 
 //TrieNode struct destrcutor
-void trie_node_delete(TrieNode *n){
+void trie_node_delete(TrieNode *n) {
     free(n);
     n = NULL;
     return;
 }
 
 //creates a root node for the trie data structure
-TrieNode *trie_create(void){
+TrieNode *trie_create(void) {
     TrieNode *root = trie_node_create(EMPTY_CODE);
-    if (root != NULL){
+    if (root != NULL) {
         return root;
     } else {
         return NULL;
@@ -36,9 +36,9 @@ TrieNode *trie_create(void){
 //from the root, checks if each child is null
 //if not, then calls trie_delete on them, which
 //kills the entire subtree held by that child
-void trie_reset(TrieNode *root){
-    for (int i = 0; i < ALPHABET; i++){
-        if (root->children[i] == NULL){
+void trie_reset(TrieNode *root) {
+    for (int i = 0; i < ALPHABET; i++) {
+        if (root->children[i] == NULL) {
             continue;
         } else {
             //printf("at index %d trie_delete\n", i);
@@ -50,9 +50,9 @@ void trie_reset(TrieNode *root){
 
 //deletes each child of a trienode and then
 //itself. Works recursively
-void trie_delete(TrieNode *n){
-    for (int i = 0; i < ALPHABET; i++){
-        if (n->children[i] == NULL){
+void trie_delete(TrieNode *n) {
+    for (int i = 0; i < ALPHABET; i++) {
+        if (n->children[i] == NULL) {
             continue;
         } else {
             trie_delete(n->children[i]);
@@ -67,7 +67,7 @@ void trie_delete(TrieNode *n){
 //held by sym. In C, all cahracters hold a value
 //so sym arr[sym] will return the sym index of
 //array "arr"
-TrieNode *trie_step(TrieNode *n, uint8_t sym){
+TrieNode *trie_step(TrieNode *n, uint8_t sym) {
     return (n->children[sym]);
 }
 
@@ -97,4 +97,3 @@ int m5ain (void){
     trie_delete(b);
     return 0;
 }*/
-

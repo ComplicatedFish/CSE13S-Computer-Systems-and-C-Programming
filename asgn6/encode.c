@@ -22,11 +22,11 @@ void print_help(void);
 //checking if the bit exists there with AND'ing it with
 //a 1 shifted to that bit. If the result is true, the input
 //is *at least* that much bits, and the index is set to i + 1
-//(since length is 1 indexed) 
-int bit_len(uint16_t num){
+//(since length is 1 indexed)
+int bit_len(uint16_t num) {
     int index = 0;
-    for (uint16_t i = 0; i < 16; i++){
-        if (num & (1 << i)){
+    for (uint16_t i = 0; i < 16; i++) {
+        if (num & (1 << i)) {
             index = i + 1;
         }
     }
@@ -71,9 +71,9 @@ int main(int argc, char **argv) {
     uint8_t curr_sym = 0;
     uint8_t prev_sym = 0;
     uint16_t next_code = START_CODE;
-    while (read_sym(infile, &curr_sym)){
+    while (read_sym(infile, &curr_sym)) {
         next_node = trie_step(curr_node, curr_sym);
-        if (next_node != NULL){
+        if (next_node != NULL) {
             prev_node = curr_node;
             curr_node = next_node;
         } else {
@@ -82,7 +82,7 @@ int main(int argc, char **argv) {
             curr_node = root;
             next_code += 1;
         }
-        if (next_code == MAX_CODE){
+        if (next_code == MAX_CODE) {
             trie_reset(root);
             curr_node = root;
             next_code = START_CODE;
@@ -90,20 +90,18 @@ int main(int argc, char **argv) {
         prev_sym = curr_sym;
         //printf("\n%u\n", next_code);
     }
-    if (curr_node != root){
+    if (curr_node != root) {
         write_pair(outfile, prev_node->code, prev_sym, bit_len(next_code));
-        next_code = (next_code + 1)%MAX_CODE;
+        next_code = (next_code + 1) % MAX_CODE;
     }
     write_pair(outfile, STOP_CODE, 0, bit_len(next_code));
     flush_pairs(outfile);
 
-
     //verbose output here
     if (v) {
-        
     }
 
-    fchmod(outfile, 0600/*file_info.st_mode*/);
+    fchmod(outfile, 0600 /*file_info.st_mode*/);
 
     close(infile);
     close(outfile);
@@ -127,5 +125,3 @@ void print_help(void) {
                     "   -h              Prints help message (this message).\n");
     return;
 }
-
-
