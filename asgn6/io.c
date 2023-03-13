@@ -103,54 +103,51 @@ bool read_sym(int infile, uint8_t *sym) {
     }
 }
 
+//global variable for use with write_pair
+int bit_index;
+
 //writes pairs of bitlen bits of code and the accompanying symbol
 //uses global buffer write_buffer
 void write_pair(int outfile, uint16_t code, uint8_t sym, int bitlen) {
-    //remember sets.c from asgn 3
-    static int bit_index;
-    int byte_index = bit_index / 8;
-    if (byte_index == BLOCK) { //buffer full!
-        byte_index = 0;
-        bit_index = 0;
-        total_bits = BLOCK * 8;
+    if (bit_index/8 == BLOCK) { //buffer full!
         flush_pairs(outfile);
     }
     for (int i = 0; i < bitlen; i++) {
-        write_buffer[byte_index] = write_buffer[byte_index] | (code & (1 << (bit_index % 8)));
+        //this and the accompanying line for writing sym below are very complex. To break it down
+        //first code is shifted to the right i times to check if code actually has a bit at that
+        //location. If it does not, a harmless logical OR with 0's is performed, doing nothing. If
+        //there does exist a bit at index i, then the value of ((code >> i) & 1) = 1, which gets
+        //shifted to the left the required number of times as provided by bit_index%8. This ensures
+        //that the code (and sym below) is written into the buffer correctly
+        write_buffer[bit_index/8] = write_buffer[bit_index/8] | (((code >> i) & 1) << (bit_index % 8));
         bit_index++;
-        byte_index = bit_index / 8;
-        if (byte_index == BLOCK) { //buffer full!
-            bit_index = 0;
-            byte_index = 0;
-            total_bits = BLOCK * 8;
+        if (bit_index/8 == BLOCK) { //buffer full!
             flush_pairs(outfile);
         }
     }
     for (int i = 0; i < 8; i++) {
-        write_buffer[byte_index] = write_buffer[byte_index] | (sym & (1 << (bit_index % 8)));
+        //see above for explanation of this line below
+        write_buffer[bit_index/8] = write_buffer[bit_index/8] | (((sym >> i) & 1) << (bit_index % 8));
         bit_index++;
-        byte_index = bit_index / 8;
-        if (byte_index == BLOCK) { //buffer full!
-            bit_index = 0;
-            byte_index = 0;
-            total_bits = BLOCK * 8;
+        //byte_index = bit_index / 8;
+        if (bit_index/8 == BLOCK) { //buffer full!
             flush_pairs(outfile);
         }
     }
-    total_bits = bit_index;
+    //total_bits = bit_index;
 }
 
 //flushes write_pair()'s buffer
 //writing everythign stored within
 //the global buffer write_buffer
 void flush_pairs(int outfile) {
-    /*
-    if (total_bits == 0){
-        write_bytes(outfile, write_buffer, BLOCK);
-    } else {
-    */
-    //printf("total_bits = %lu\n", total_bits);
+    total_bits += bit_index;
     write_bytes(outfile, write_buffer, (total_bits + 8 - 1) / 8); //ceiling division of total_bits/8
+
+    for (int i = 0; i < BLOCK; i++){
+        write_buffer[i] = 0;
+    }
+    bit_index = 0;
 }
 
 //This function read's pair from infile into the global buffer read_buffer
