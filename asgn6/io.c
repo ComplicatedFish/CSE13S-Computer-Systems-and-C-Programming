@@ -46,6 +46,9 @@ int read_bytes(int infile, uint8_t *buf, int to_read){
     return sum;
 }
 
+//this function writes bytes out to the outfile
+//it repeats calls to write() until the specified number
+//of bytes is read
 int write_bytes(int outfile, uint8_t *buf, int to_write){
     int w;
     int sum = 0;
@@ -59,6 +62,7 @@ int write_bytes(int outfile, uint8_t *buf, int to_write){
     return sum;
 }
 
+//reads header from infile directly to allocated header struct
 void read_header(int infile, FileHeader *header){
     read_bytes(infile, (uint8_t *)header, sizeof(FileHeader));
     if (big_endian()){
@@ -67,6 +71,7 @@ void read_header(int infile, FileHeader *header){
     }
 }
 
+//writes header directly to outfile from header struct
 void write_header(int outfile, FileHeader *header){
     if (big_endian()){
         header->magic = swap32(header->magic);
@@ -155,8 +160,11 @@ bool read_pair(int infile, uint16_t *code, uint8_t *sym, int bitlen){
         r = read_bytes(infile, read_buffer, BLOCK);
         if (r){r++;} //disables warning, CHANGE LATER
     }
+    printf("read buffer at byte 0 = %u\n", read_buffer[byte_index]);
     for (int i = 0; i < bitlen; i++){
+        printf("index %d", bit_index);
         *code = *code | (read_buffer[byte_index] & (1 << (bit_index % 8)));
+        printf(" code %u\n", *code);
         bit_index++;
         byte_index = bit_index/8;
         //read_buffer[byte_index] = read_buffer[byte_index] | (code & (1 << (bit_index % 8)));
@@ -170,6 +178,7 @@ bool read_pair(int infile, uint16_t *code, uint8_t *sym, int bitlen){
         return false;
     }
     for (int i = 0; i < 8; i++){
+        printf("bit %d, byte %d\n", bit_index, byte_index);
         *sym = *sym | (read_buffer[byte_index] & (1 << (bit_index % 8)));
         bit_index++;
         byte_index = bit_index/8;
@@ -183,7 +192,8 @@ bool read_pair(int infile, uint16_t *code, uint8_t *sym, int bitlen){
     return true;
 }
 
- 
+//writes decoded words to outfile. used in
+//decompression
 void write_word(int outfile, Word *w){
     static int byte_index;
     for (uint32_t i = 0; i < w->len; i++){
@@ -200,6 +210,8 @@ void write_word(int outfile, Word *w){
 void flush_words(int outfile){
     write_bytes(outfile, word_buffer, BLOCK);
 }
+
+//main used for testing
 /*
 int main (void){
     int fd = open("input.txt", O_RDONLY | O_CREAT);

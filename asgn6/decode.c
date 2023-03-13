@@ -55,6 +55,8 @@ int main(int argc, char **argv) {
         return 2;
     }
     
+    printf("the bit length of 110 is %u\n", bit_len(6));
+
     FileHeader *header = (FileHeader *) calloc(1, sizeof(FileHeader));
     read_header(infile, header);
     if (header->magic != 0xBAADBAAC){
@@ -63,16 +65,17 @@ int main(int argc, char **argv) {
     }
 
     WordTable *table = wt_create();
-    table[EMPTY_CODE] = word_create(0, 0);
+
     uint8_t curr_sym = 0;
     uint16_t curr_code = 0;
     uint16_t next_code = START_CODE;
     while (read_pair(infile, &curr_code, &curr_sym, bit_len(next_code))){
-        printf("the current sym is %"PRIu8"\n", curr_sym);
+        printf("the current sym is %"PRIu8" and the code is %u\n", curr_sym, curr_code);
         table[next_code] = word_append_sym(table[curr_code], curr_sym);
         write_word(outfile, table[next_code]);
         next_code += 1;
         if (next_code == MAX_CODE){
+            printf("if statement\n");
             wt_reset(table);
             next_code = START_CODE;
         }

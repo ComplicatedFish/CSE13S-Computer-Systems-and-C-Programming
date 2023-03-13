@@ -20,7 +20,7 @@ TrieNode *trie_node_create(uint16_t index){
 void trie_node_delete(TrieNode *n){
     free(n);
     n = NULL;
-    //printf("free called\n");
+    return;
 }
 
 //creates a root node for the trie data structure
@@ -68,14 +68,9 @@ void trie_delete(TrieNode *n){
 //so sym arr[sym] will return the sym index of
 //array "arr"
 TrieNode *trie_step(TrieNode *n, uint8_t sym){
-    return n->children[sym];
-    /*for (int i = 0; i < ALPHABET; i++){
-        if (n->children[i]->code == sym){
-            return n->children[i];
-        }
-    }
-    return NULL;*/
+    return (n->children[sym]);
 }
+
 /*
 int m5ain (void){
     TrieNode *a = trie_node_create(16);
