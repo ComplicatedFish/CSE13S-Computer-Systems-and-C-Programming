@@ -184,8 +184,8 @@ bool read_pair(int infile, uint16_t *code, uint8_t *sym, int bitlen) {
     }
     if (*code == STOP_CODE) {
         total_bits
-            += 8; //we can exist program early if *code is STOP_CODE, but we have to account for the pair of code STOP_CODE
-            //totalbits incremented 8 bits here to account for STOP_CODE's pair
+            += 8; //we can exits program early if *code is STOP_CODE, but we have to account for the pair of code STOP_CODE.
+        //Therefore, totalbits incremented 8 bits here to account for STOP_CODE's pair
         return false;
     }
     for (int i = 0; i < 8; i++) {
