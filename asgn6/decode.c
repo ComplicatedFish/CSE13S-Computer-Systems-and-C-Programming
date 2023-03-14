@@ -64,18 +64,18 @@ int main(int argc, char **argv) {
         return 2;
     }
 
+    fchmod(outfile, header->protection);
+
     WordTable *table = wt_create();
 
     uint8_t curr_sym = 0;
     uint16_t curr_code = 0;
     uint16_t next_code = START_CODE;
     while (read_pair(infile, &curr_code, &curr_sym, bit_len(next_code))) {
-        //printf("the current sym is %"PRIu8" and the code is %u\n", curr_sym, curr_code);
         table[next_code] = word_append_sym(table[curr_code], curr_sym);
         write_word(outfile, table[next_code]);
         next_code += 1;
         if (next_code == MAX_CODE) {
-            //printf("if statement\n");
             wt_reset(table);
             next_code = START_CODE;
         }
@@ -84,11 +84,14 @@ int main(int argc, char **argv) {
 
     //verbose output here
     if (v) {
-        int total_bytes = (total_bits + 8 - 1)/8 + (int)sizeof(FileHeader); //ceiling division to obtain total bytes in file
+        int total_bytes
+            = (total_bits + 8 - 1) / 8
+              + (int) sizeof(FileHeader); //ceiling division to obtain total bytes in file
         //fileheader size also needs to be added to compressed file size
         printf("Compressed file size: %d bytes\n", total_bytes);
         printf("Uncompressed file size: %lu bytes\n", total_syms);
-        printf("Compression ratio: %.2f%%\n", (1 - ((double)total_bytes/(double)total_syms))*100); 
+        printf("Compression ratio: %.2f%%\n",
+            (1 - ((double) total_bytes / (double) total_syms)) * 100);
     }
 
     wt_delete(table);

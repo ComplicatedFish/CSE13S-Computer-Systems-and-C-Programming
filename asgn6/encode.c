@@ -47,11 +47,15 @@ int main(int argc, char **argv) {
     while ((opt = getopt(argc, argv, OPTIONS)) != -1) {
         switch (opt) {
         case 'i': infile = open(optarg, O_RDONLY | O_CREAT); break;
-        case 'o': outfile = open(optarg, O_WRONLY | O_CREAT); break;
+        case 'o': outfile = open(optarg, O_WRONLY | O_CREAT | O_TRUNC); break;
         case 'v': v = 1; break;
         case 'h': h = 1; break;
         default: h = 1; break;
         }
+    }
+    if (infile < 0 || outfile < 0) {
+        perror("ERROR!");
+        return 2;
     }
     if (h) {
         print_help();
@@ -91,7 +95,6 @@ int main(int argc, char **argv) {
             next_code = START_CODE;
         }
         prev_sym = curr_sym;
-        //printf("\n%u\n", next_code);
     }
     if (curr_node != root) {
         write_pair(outfile, prev_node->code, prev_sym, bit_len(next_code));
@@ -102,14 +105,17 @@ int main(int argc, char **argv) {
 
     //verbose output here
     if (v) {
-        int total_bytes = (total_bits + 8 - 1)/8 + (int)sizeof(FileHeader); //ceiling division to obtain total bytes in file
+        int total_bytes
+            = (total_bits + 8 - 1) / 8
+              + (int) sizeof(FileHeader); //ceiling division to obtain total bytes in file
         //fileheader size also needs to be added to compressed file size
         printf("Compressed file size: %d bytes\n", total_bytes);
         printf("Uncompressed file size: %lu bytes\n", total_syms);
-        printf("Compression ratio: %.2f%%\n", (1 - ((double)total_bytes/(double)total_syms))*100);
+        printf("Compression ratio: %.2f%%\n",
+            (1 - ((double) total_bytes / (double) total_syms)) * 100);
     }
 
-    fchmod(outfile, 0600 /*file_info.st_mode*/);
+    fchmod(outfile, file_info.st_mode);
 
     close(infile);
     close(outfile);

@@ -70,30 +70,3 @@ void trie_delete(TrieNode *n) {
 TrieNode *trie_step(TrieNode *n, uint8_t sym) {
     return (n->children[sym]);
 }
-
-/*
-int m5ain (void){
-    TrieNode *a = trie_node_create(16);
-    TrieNode *b = trie_create();
-    b->children[10] = a;
-
-    for (int i = 0; i < 15; i++){
-        if (b->children[i] == NULL){
-            printf("%d NULL\n", i);
-        } else {
-            printf("%d %u\n", i, b->children[i]->code);
-        }
-    }
-    trie_reset(b);
-    for (int i = 0; i < 15; i++){
-        if (b->children[i] == NULL){
-            printf("%d NULL\n", i);
-        } else {
-            printf("before print\n");
-            printf("%d %u\n", i, b->children[i]->code);
-        }
-    }
-
-    trie_delete(b);
-    return 0;
-}*/
