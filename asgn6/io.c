@@ -16,14 +16,9 @@
 uint64_t total_syms; // To count the symbols processed. used for flush_words
 uint64_t total_bits; // To count the bits processed.
 
-/*extern*/ uint8_t read_buffer[BLOCK]; //buffer for read_pair
-/*extern*/ uint8_t write_buffer[BLOCK]; //buffer for write_pair
-/*extern*/ uint8_t word_buffer[BLOCK]; //buffer for write_word
-
-//typedef struct FileHeader {
-//  uint32_t magic;
-//  uint16_t protection;
-//} FileHeader;
+uint8_t read_buffer[BLOCK]; //buffer for read_pair
+uint8_t write_buffer[BLOCK]; //buffer for write_pair
+uint8_t word_buffer[BLOCK]; //buffer for write_word
 
 //
 //this functions and the following function write_bytes() read and write
@@ -143,8 +138,12 @@ void write_pair(int outfile, uint16_t code, uint8_t sym, int bitlen) {
 //the global buffer write_buffer
 void flush_pairs(int outfile) {
     total_bits += write_bit_index;
-    write_bytes(outfile, write_buffer, (total_bits + 8 - 1) / 8); //ceiling division of total_bits/8
-
+    //write_bytes(outfile, write_buffer, (total_bits + 8 - 1) / 8); //ceiling division of total_bits/8
+    if (write_bit_index/8 == BLOCK) {
+        write_bytes(outfile, write_buffer, BLOCK);
+    } else {
+        write_bytes(outfile, write_buffer, (total_bits + 8 - 1) / 8);
+    }
     for (int i = 0; i < BLOCK; i++){
         write_buffer[i] = 0;
     }
@@ -158,17 +157,16 @@ int read_bit_index;
 //once the buffer is filled, pairs are gathered from the buffer into
 // *code and *sym
 bool read_pair(int infile, uint16_t *code, uint8_t *sym, int bitlen){
-    int r; //holds result of read_bytes
+    static int r; //holds result of read_bytes
+    static int check; //ensures initialization is only done once in program
     *code = 0;
     *sym = 0;
-    if (read_bit_index/8 == BLOCK) {
-        read_bit_index = 0;
-    }
-    if (read_bit_index == 0) { //buffer empty, needs to be filled
+    if (read_bit_index == 0 && check != 1) { //buffer empty, needs to be filled
         r = read_bytes(infile, read_buffer, BLOCK);
-        if (!r){
-            return false;
-        }
+        check = 1; //ensures this initialization never entered again
+    }
+    if (!r){
+        return false;
     }
 
     for (int i = 0; i < bitlen; i++) {
@@ -177,20 +175,26 @@ bool read_pair(int infile, uint16_t *code, uint8_t *sym, int bitlen){
         //specified by (read_bit_index % 8). This is AND'ed with a 1 to ensure there exists a bit at that
         //location. That bit is then shifted to the right i times (i is from for loop) into the correct
         //position in *code
-        *code = *code | ((((read_buffer[read_bit_index/8] >> (read_bit_index % 8))) & 1) << i);//& (1 << (read_bit_index % 8)));
+        *code = *code | ((((read_buffer[read_bit_index/8] >> (read_bit_index % 8))) & 1) << i);
+
         read_bit_index++;
+        total_bits++;
         if (read_bit_index/8 == BLOCK) {
             read_bit_index = 0;
             r = read_bytes(infile, read_buffer, BLOCK);
         }
     }
     if (*code == STOP_CODE) {
+        total_bits += 8; //we can exist program early if *code is STOP_CODE, but we have to account for the pair of code STOP_CODE
+                         //totalbits incremented 8 bits here to account for STOP_CODE's pair
         return false;
     }
     for (int i = 0; i < 8; i++) {
         //see code copying loop above
-        *sym = *sym | ((((read_buffer[read_bit_index/8] >> (read_bit_index % 8))) & 1) << i);//& (1 << (read_bit_index % 8)));
+        *sym = *sym | ((((read_buffer[read_bit_index/8] >> (read_bit_index % 8))) & 1) << i);
+
         read_bit_index++;
+        total_bits++;
         if (read_bit_index/8 == BLOCK) {
             read_bit_index = 0;
             r = read_bytes(infile, read_buffer, BLOCK);
@@ -199,27 +203,33 @@ bool read_pair(int infile, uint16_t *code, uint8_t *sym, int bitlen){
     return true;
 }
 
+int word_byte_index;
+
 //writes decoded words to outfile. used in
 //decompression
 void write_word(int outfile, Word *w) {
-    static int byte_index;
+    //static int byte_index;
     for (uint32_t i = 0; i < w->len; i++) {
-        word_buffer[byte_index] = w->syms[i];
-        byte_index++;
+        word_buffer[word_byte_index] = w->syms[i];
+        word_byte_index++;
         total_syms++;
-        if (byte_index == BLOCK) {
+        if (word_byte_index == BLOCK) {
             flush_words(outfile);
-            byte_index = 0;
+            word_byte_index = 0;
         }
     }
 }
 
 //writes out symbols in word_buffer left
 void flush_words(int outfile) {
-    if (total_syms % BLOCK == 0) {
+    //write_bytes(outfile, write_buffer, (total_bits + 8 - 1) / 8); //ceiling division of total_bits/8
+    if (total_syms%BLOCK == 0) {
         write_bytes(outfile, word_buffer, BLOCK);
     } else {
-        write_bytes(outfile, word_buffer, total_syms%BLOCK);
+        write_bytes(outfile, word_buffer, word_byte_index);
+    }
+    for (int i = 0; i < BLOCK; i++){
+        word_buffer[i] = 0;
     }
 }
 

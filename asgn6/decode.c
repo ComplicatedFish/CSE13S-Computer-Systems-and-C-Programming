@@ -44,7 +44,7 @@ int main(int argc, char **argv) {
     while ((opt = getopt(argc, argv, OPTIONS)) != -1) {
         switch (opt) {
         case 'i': infile = open(optarg, O_RDONLY | O_CREAT); break;
-        case 'o': outfile = open(optarg, O_WRONLY | O_CREAT); break;
+        case 'o': outfile = open(optarg, O_WRONLY | O_CREAT | O_TRUNC); break;
         case 'v': v = 1; break;
         case 'h': h = 1; break;
         default: h = 1; break;
@@ -59,7 +59,7 @@ int main(int argc, char **argv) {
 
     FileHeader *header = (FileHeader *) calloc(1, sizeof(FileHeader));
     read_header(infile, header);
-    if (header->magic != 0xBAADBAAC) {
+    if (header->magic != MAGIC) {
         printf("Wrong Magic Number!\n");
         return 2;
     }
@@ -75,7 +75,7 @@ int main(int argc, char **argv) {
         write_word(outfile, table[next_code]);
         next_code += 1;
         if (next_code == MAX_CODE) {
-            printf("if statement\n");
+            //printf("if statement\n");
             wt_reset(table);
             next_code = START_CODE;
         }
@@ -84,6 +84,11 @@ int main(int argc, char **argv) {
 
     //verbose output here
     if (v) {
+        int total_bytes = (total_bits + 8 - 1)/8 + (int)sizeof(FileHeader); //ceiling division to obtain total bytes in file
+        //fileheader size also needs to be added to compressed file size
+        printf("Compressed file size: %d bytes\n", total_bytes);
+        printf("Uncompressed file size: %lu bytes\n", total_syms);
+        printf("Compression ratio: %.2f%%\n", (1 - ((double)total_bytes/(double)total_syms))*100); 
     }
 
     wt_delete(table);

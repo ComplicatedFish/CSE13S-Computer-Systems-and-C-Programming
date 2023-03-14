@@ -46,7 +46,7 @@ Word *word_append_sym(Word *w, uint8_t sym) {
 
 //deletes individual word struct
 void word_delete(Word *w) {
-    if (w->len != 0) {
+    if (w->len != 0 | w->syms != NULL) {
         free(w->syms);
         w->syms = NULL;
     }
