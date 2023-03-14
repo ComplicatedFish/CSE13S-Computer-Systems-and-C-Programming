@@ -70,7 +70,7 @@ int main(int argc, char **argv) {
     uint16_t curr_code = 0;
     uint16_t next_code = START_CODE;
     while (read_pair(infile, &curr_code, &curr_sym, bit_len(next_code))) {
-        printf("the current sym is %"PRIu8" and the code is %u\n", curr_sym, curr_code);
+        //printf("the current sym is %"PRIu8" and the code is %u\n", curr_sym, curr_code);
         table[next_code] = word_append_sym(table[curr_code], curr_sym);
         write_word(outfile, table[next_code]);
         next_code += 1;

@@ -15,6 +15,9 @@
 
 #define OPTIONS "vi:o:h"
 
+extern uint64_t total_syms; // To count the symbols processed. used for flush_words and read_sym
+extern uint64_t total_bits; // To count the bits processed.used for flush_pairs
+
 void print_help(void);
 
 //gets the bit length of a uint16_t, which in this case
@@ -99,6 +102,11 @@ int main(int argc, char **argv) {
 
     //verbose output here
     if (v) {
+        int total_bytes = (total_bits + 8 - 1)/8 + (int)sizeof(FileHeader); //ceiling division to obtain total bytes in file
+        //fileheader size also needs to be added to compressed file size
+        printf("Compressed file size: %d bytes\n", total_bytes);
+        printf("Uncompressed file size: %lu bytes\n", total_syms);
+        printf("Compression ratio: %.2f%%\n", (1 - ((double)total_bytes/(double)total_syms))*100);
     }
 
     fchmod(outfile, 0600 /*file_info.st_mode*/);

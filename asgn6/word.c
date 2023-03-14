@@ -27,14 +27,14 @@ Word *word_create(uint8_t *syms, uint32_t len) {
 //returns a new word struct after appending
 //a sym to the sym of the input word *w
 Word *word_append_sym(Word *w, uint8_t sym) {
-    printf("word append entered\n");
+    //printf("word append entered\n");
     uint8_t new_syms[w->len + 2];
-    printf("check 0\n");
+    //printf("check 0\n");
     Word *new_word = word_create(new_syms, w->len + 2); //copies w to new_word
-    printf("check 1\n");
+    //printf("check 1\n");
     //new_word->syms = new_syms;
     for (uint32_t i = 0; i < w->len; i++) {
-        printf("i = %u\n", i);
+        //printf("i = %u\n", i);
         new_word->syms[i] = w->syms[i];
         //printf("i = %u\n", i);
     }
